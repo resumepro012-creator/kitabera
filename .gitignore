@@ -1,0 +1,7 @@
+node_modules
+dist
+.vscode
+server/uploads
+.env
+.env.*
+!.env.example
