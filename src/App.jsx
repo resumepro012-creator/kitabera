@@ -414,6 +414,8 @@ function AppShell({ children }) {
   const navigate = useNavigate();
   const isAdminArea = location.pathname.startsWith('/admin') && location.pathname !== '/admin/login';
   const isHomePage = location.pathname === '/';
+  const brandTitle = isAdminArea ? 'Ae' : 'Kitab Era';
+  const brandSubtitle = isAdminArea ? '' : 'Reading Room';
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   function handleNavLogout() {
@@ -480,8 +482,8 @@ function AppShell({ children }) {
           <Link to="/" className="brand-mark">
             <img src={logo} alt="Kitab Era Logo" className="brand-mark__icon" />
             <span>
-              <strong>Kitab Era</strong>
-              <small>Reading Room</small>
+              <strong>{brandTitle}</strong>
+              {brandSubtitle ? <small>{brandSubtitle}</small> : null}
             </span>
           </Link>
         </div>
