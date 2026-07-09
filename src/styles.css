@@ -255,8 +255,40 @@ main {
     display: none;
   }
 
+  .topbar__nav-admin--desktop {
+    display: none;
+  }
+
+  .topbar__nav-admin--mobile {
+    display: inline-block;
+  }
+
+  .topbar__nav-admin {
+    width: auto;
+    height: auto;
+    padding: 0.6rem 0.9rem;
+    font-weight: 500;
+  }
+
   .mobile-menu-toggle {
     display: block;
+  }
+
+  /* Mobile: 2 columns for contact cards and team grid */
+  .contact-cards-grid,
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Footer icons smaller on mobile */
+  .site-footer__icons {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .site-footer__icon {
+    width: 2rem;
+    height: 2rem;
   }
 }
 
@@ -283,6 +315,14 @@ main {
   border-color: #583f58 !important;
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+.topbar__nav-admin--desktop {
+  display: inline-block;
+}
+
+.topbar__nav-admin--mobile {
+  display: none;
 }
 
 .topbar__nav-divider {
@@ -822,8 +862,8 @@ main {
 
 .site-footer__icons {
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  gap: 1rem;
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: center;
 }
@@ -832,8 +872,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   transition: transform 0.2s ease;
 }
 

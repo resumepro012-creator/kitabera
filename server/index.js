@@ -26,7 +26,13 @@ app.use(express.static(path.join(__dirname, '..', 'dist'), { maxAge: '1d' }));
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = path.join(__dirname, 'uploads', 'novels');
-    cb(null, uploadDir);
+    // Ensure the directory exists recursively
+    import('fs').then(fs => {
+      fs.mkdirSync(uploadDir, { recursive: true });
+      cb(null, uploadDir);
+    }).catch(err => {
+      cb(err);
+    });
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
