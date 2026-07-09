@@ -31,12 +31,6 @@ import asmaEditor from './assets/Asma audiobook editor.jpeg';
 import maheenEditor from './assets/maheen audiobookeditor 2.jpeg';
 import aleezaEditor from './assets/aleeza.jpeg';
 import proofreadingImage from './assets/proofreading.jfif';
-import facebookIcon from './assets/facebook.jfif';
-import gmailIcon from './assets/gmail.jfif';
-import instagramIcon from './assets/instagram.jfif';
-import tiktokIcon from './assets/tiktok.jfif';
-import watsappIcon from './assets/watsapp.jfif';
-import youtubeIcon from './assets/youtube.jfif';
 
 const CATEGORY_OPTIONS = [
   { key: 'islamic', label: 'Islamic' },
@@ -297,7 +291,11 @@ function StarRating({ rating, onRate, editable = false, size = 24 }) {
 
 function SocialIcon({ type }) {
   if (type === 'facebook') {
-    return <img src={facebookIcon} alt="Facebook" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M13.5 22v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.8-.1-1.8-.2-2.8-.2-2.8 0-4.8 1.7-4.8 4.9V11H6v3h3.1v8h4.4z" />
+      </svg>
+    );
   }
 
   if (type === 'facebook-group') {
@@ -309,23 +307,43 @@ function SocialIcon({ type }) {
   }
 
   if (type === 'instagram') {
-    return <img src={instagramIcon} alt="Instagram" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.2A4.8 4.8 0 1 1 7.2 12 4.8 4.8 0 0 1 12 7.2Zm0 2A2.8 2.8 0 1 0 14.8 12 2.8 2.8 0 0 0 12 9.2Zm5.1-2.7a1.1 1.1 0 1 1-1.1 1.1 1.1 1.1 0 0 1 1.1-1.1Z" />
+      </svg>
+    );
   }
 
   if (type === 'youtube') {
-    return <img src={youtubeIcon} alt="YouTube" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21.8 8s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C16.2 5 12 5 12 5s-4.2 0-7 .1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.3.9C6.8 19 12 19 12 19s4.2 0 7-.2c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.5C22 9.6 21.8 8 21.8 8zM9.7 14.5V9l5.4 2.8-5.4 2.7z" />
+      </svg>
+    );
   }
 
   if (type === 'tiktok') {
-    return <img src={tiktokIcon} alt="TikTok" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M19.6 3.3A4.5 4.5 0 0 1 15.2 0h-3.1v15.6a2.6 2.6 0 0 1-2.6 2.3 2.6 2.6 0 0 1-2.6-2.6 2.6 2.6 0 0 1 2.6-2.6c.3 0 .5 0 .7.1V9.6a5.7 5.7 0 0 0-.7 0A5.7 5.7 0 0 0 3.8 15.3a5.7 5.7 0 0 0 5.7 5.7 5.7 5.7 0 0 0 5.7-5.7V8a7.6 7.6 0 0 0 4.4 1.4V6.3a4.5 4.5 0 0 1-2.7-.9l2.7-2.1z" />
+      </svg>
+    );
   }
 
   if (type === 'whatsapp') {
-    return <img src={watsappIcon} alt="WhatsApp" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-1 1.1-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.2-.7-1.6-1-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4C8.2 7.1 7.5 7.8 7.5 9.2s1 2.8 1.1 3c.1.2 1.9 3 4.7 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.3a8.3 8.3 0 0 1-4.2-1.1l-.3-.2-3.1.8.8-3-.2-.3A8.3 8.3 0 1 1 12 20.3z" />
+      </svg>
+    );
   }
 
   if (type === 'mail') {
-    return <img src={gmailIcon} alt="Email" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+      </svg>
+    );
   }
 
   return null;
