@@ -1762,6 +1762,7 @@ function AdminLoginPage() {
 }
 
 function AdminDashboardPage() {
+  console.log("AdminDashboardPage mounted!");
   const navigate = useNavigate();
   const [writers, setWriters] = useState([]);
   const [writerForm, setWriterForm] = useState({ name: '', bio: '' });
@@ -2087,7 +2088,15 @@ function AdminDashboardPage() {
                           Summary
                           <textarea value={novelForm.summary} onChange={(event) => setNovelForm({ ...novelForm, summary: event.target.value })} rows="4" placeholder="Brief description of the novel..." />
                         </label>
-                        <button className="primary-button" disabled={!novelForm.title.trim()}>
+                        <button 
+                          className="primary-button" 
+                          disabled={!novelForm.title.trim()}
+                          onClick={(e) => { 
+                            console.log("Create Folder button clicked!");
+                            e.preventDefault();
+                            handleNovelSubmit(e); 
+                          }}
+                        >
                           Create Folder
                         </button>
                       </>
@@ -2145,7 +2154,15 @@ function AdminDashboardPage() {
                               />
                               {novelPdf && <small style={{ color: 'var(--plum-700)' }}>✓ {novelPdf.name}</small>}
                             </label>
-                            <button className="primary-button" disabled={!novelPdf}>
+                            <button 
+                              className="primary-button" 
+                              disabled={!novelPdf}
+                              onClick={(e) => { 
+                                console.log("Upload File button clicked!");
+                                e.preventDefault();
+                                handleNovelSubmit(e); 
+                              }}
+                            >
                               Upload File
                             </button>
                           </>
@@ -2176,7 +2193,15 @@ function AdminDashboardPage() {
                       />
                       {novelPdf && <small style={{ color: 'var(--plum-700)' }}>✓ {novelPdf.name}</small>}
                     </label>
-                    <button className="primary-button" disabled={!novelPdf || !novelForm.title.trim()}>
+                    <button 
+                      className="primary-button" 
+                      disabled={!novelPdf || !novelForm.title.trim()}
+                      onClick={(e) => { 
+                        console.log("Upload button clicked!");
+                        e.preventDefault();
+                        handleNovelSubmit(e); 
+                      }}
+                    >
                       {!novelPdf ? 'Select PDF file to upload' : 'Upload novel'}
                     </button>
                   </>
