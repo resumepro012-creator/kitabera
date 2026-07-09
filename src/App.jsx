@@ -295,11 +295,24 @@ function StarRating({ rating, onRate, editable = false, size = 24 }) {
   );
 }
 
-function SocialIcon({ type }) {
-  // Keep SVG for Instagram only if used in credit, but for now just use SVG for all except we use images
-  // Wait, let's use images but wrap them properly in circular containers!
+function SocialIcon({ type, useImage = false }) {
+  // If useImage is true, use the user's custom images; else use default SVGs
+  if (useImage) {
+    if (type === 'facebook') return <img src={facebookIcon} alt="Facebook" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    if (type === 'instagram') return <img src={instagramIcon} alt="Instagram" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    if (type === 'youtube') return <img src={youtubeIcon} alt="YouTube" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    if (type === 'tiktok') return <img src={tiktokIcon} alt="TikTok" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    if (type === 'whatsapp') return <img src={watsappIcon} alt="WhatsApp" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    if (type === 'mail') return <img src={gmailIcon} alt="Email" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+  }
+
+  // Default to SVG
   if (type === 'facebook') {
-    return <img src={facebookIcon} alt="Facebook" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M13.5 22v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.8-.1-1.8-.2-2.8-.2-2.8 0-4.8 1.7-4.8 4.9V11H6v3h3.1v8h4.4z" />
+      </svg>
+    );
   }
 
   if (type === 'facebook-group') {
@@ -311,23 +324,43 @@ function SocialIcon({ type }) {
   }
 
   if (type === 'instagram') {
-    return <img src={instagramIcon} alt="Instagram" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.2A4.8 4.8 0 1 1 7.2 12 4.8 4.8 0 0 1 12 7.2Zm0 2A2.8 2.8 0 1 0 14.8 12 2.8 2.8 0 0 0 12 9.2Zm5.1-2.7a1.1 1.1 0 1 1-1.1 1.1 1.1 1.1 0 0 1 1.1-1.1Z" />
+      </svg>
+    );
   }
 
   if (type === 'youtube') {
-    return <img src={youtubeIcon} alt="YouTube" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21.8 7.2a3 3 0 0 0-2.1-2.1C18 4.7 12 4.7 12 4.7s-6 0-7.7.4a3 3 0 0 0-2.1 2.1A31.9 31.9 0 0 0 1.8 12a31.9 31.9 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.7.4 7.7.4 7.7.4s6 0 7.7-.4a3 3 0 0 0 2.1-2.1A31.9 31.9 0 0 0 22.2 12a31.9 31.9 0 0 0-.4-4.8ZM9.8 15.2V8.8L15.2 12Z" />
+      </svg>
+    );
   }
 
   if (type === 'tiktok') {
-    return <img src={tiktokIcon} alt="TikTok" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v14.05a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V10.6a6.32 6.32 0 0 0-.88-.06 6.36 6.36 0 0 0 0 12.72 6.36 6.36 0 0 0 6.36-6.36v-2.48a8.16 8.16 0 0 0 4.77 1.52V9.4a4.85 4.85 0 0 1-3.01-1.05z" />
+      </svg>
+    );
   }
 
   if (type === 'whatsapp') {
-    return <img src={watsappIcon} alt="WhatsApp" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.64 14.49c-.19.55-.79 1.01-1.26 1.06-1.19.13-3.14-.37-5.25-1.63-2.11-1.26-3.71-3.03-4.12-4.22-.42-1.19-.17-2.2.14-2.8.27-.5.76-.75 1.27-.75.1 0 .19.01.28.03.11.02.25.1.38.3.36.58.8 1.47 1 1.81.18.35.21.63.11.91-.11.29-.28.48-.54.74-.13.13-.29.31-.12.61.18.3.77 1.26 1.65 2.03 1.13.99 2.06 1.47 2.35 1.64.29.17.47.14.64-.08.18-.24.75-.87.95-1.17.19-.3.39-.25.66-.15.27.11 1.7.8 1.99.94.3.14.5.22.58.34.09.12.09.68-.1 1.23z" />
+      </svg>
+    );
   }
 
   if (type === 'mail') {
-    return <img src={gmailIcon} alt="Email" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm0 2v.4l8 5.2 8-5.2V8H4Zm16 8v-5.2l-8 5.2-8-5.2V16h16Z" />
+      </svg>
+    );
   }
 
   return null;
@@ -376,7 +409,8 @@ function Footer() {
         <div className="site-footer__icons">
           {socialLinks.map((link, index) => (
             <a key={index} href={link.href} target="_blank" rel="noreferrer" aria-label={link.label} className={`site-footer__icon site-footer__icon--${link.type}`}>
-              <SocialIcon type={link.type} />
+              {/* For Facebook, use SVG; others use custom images */}
+              <SocialIcon type={link.type} useImage={link.type !== 'facebook'} />
             </a>
           ))}
         </div>
