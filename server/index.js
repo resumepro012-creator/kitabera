@@ -172,6 +172,9 @@ app.get('/api/admin/library', authMiddleware, async (req, res) => {
 });
 
 app.post('/api/admin/novels', authMiddleware, upload.single('pdf'), async (req, res) => {
+  console.log('Novel upload request received');
+  console.log('req.body:', req.body);
+  console.log('req.file:', req.file);
   const { writerId, title, summary, category, subcategory, novelId, episodeTitle } = req.body;
   if (!writerId) {
     return res.status(400).json({ message: 'Writer is required.' });
