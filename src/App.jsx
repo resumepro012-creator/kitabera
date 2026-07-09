@@ -296,8 +296,10 @@ function StarRating({ rating, onRate, editable = false, size = 24 }) {
 }
 
 function SocialIcon({ type }) {
+  // Keep SVG for Instagram only if used in credit, but for now just use SVG for all except we use images
+  // Wait, let's use images but wrap them properly in circular containers!
   if (type === 'facebook') {
-    return <img src={facebookIcon} alt="Facebook" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return <img src={facebookIcon} alt="Facebook" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
   }
 
   if (type === 'facebook-group') {
@@ -309,23 +311,23 @@ function SocialIcon({ type }) {
   }
 
   if (type === 'instagram') {
-    return <img src={instagramIcon} alt="Instagram" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return <img src={instagramIcon} alt="Instagram" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
   }
 
   if (type === 'youtube') {
-    return <img src={youtubeIcon} alt="YouTube" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return <img src={youtubeIcon} alt="YouTube" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
   }
 
   if (type === 'tiktok') {
-    return <img src={tiktokIcon} alt="TikTok" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return <img src={tiktokIcon} alt="TikTok" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
   }
 
   if (type === 'whatsapp') {
-    return <img src={watsappIcon} alt="WhatsApp" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return <img src={watsappIcon} alt="WhatsApp" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
   }
 
   if (type === 'mail') {
-    return <img src={gmailIcon} alt="Email" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
+    return <img src={gmailIcon} alt="Email" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />;
   }
 
   return null;
@@ -383,7 +385,9 @@ function Footer() {
         <p>
           Developed by Nimal{' '}
           <a href="https://www.instagram.com/siraat_author" target="_blank" rel="noreferrer" aria-label="Nimal Instagram">
-            <SocialIcon type="instagram" />
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.2A4.8 4.8 0 1 1 7.2 12 4.8 4.8 0 0 1 12 7.2Zm0 2A2.8 2.8 0 1 0 14.8 12 2.8 2.8 0 0 0 12 9.2Zm5.1-2.7a1.1 1.1 0 1 1-1.1 1.1 1.1 1.1 0 0 1 1.1-1.1Z" />
+            </svg>
           </a>
         </p>
       </div>

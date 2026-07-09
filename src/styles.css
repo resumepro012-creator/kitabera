@@ -874,6 +874,10 @@ main {
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
+  border-radius: 50%;
+  background: white;
+  overflow: hidden;
+  padding: 0.25rem;
   transition: transform 0.2s ease;
 }
 
