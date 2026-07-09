@@ -31,12 +31,6 @@ import asmaEditor from './assets/Asma audiobook editor.jpeg';
 import maheenEditor from './assets/maheen audiobookeditor 2.jpeg';
 import aleezaEditor from './assets/aleeza.jpeg';
 import proofreadingImage from './assets/proofreading.jfif';
-import facebookIcon from './assets/facebook.jfif';
-import gmailIcon from './assets/gmail.jfif';
-import instagramIcon from './assets/instagram.jfif';
-import tiktokIcon from './assets/tiktok.jfif';
-import watsappIcon from './assets/watsapp.jfif';
-import youtubeIcon from './assets/youtube.jfif';
 
 const CATEGORY_OPTIONS = [
   { key: 'islamic', label: 'Islamic' },
