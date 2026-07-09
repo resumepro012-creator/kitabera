@@ -5,6 +5,7 @@ function buildUrl(path) {
 }
 
 async function request(path, options = {}) {
+  console.log('API Request:', path, options);
   const response = await fetch(buildUrl(path), options);
   const payload = await response.json().catch(() => ({}));
 

@@ -1863,9 +1863,15 @@ function AdminDashboardPage() {
 
   async function handleNovelSubmit(event) {
     event.preventDefault();
+    console.log('handleNovelSubmit called!');
+    console.log('novelForm:', novelForm);
+    console.log('novelPdf:', novelPdf);
+    console.log('episodicAction:', episodicAction);
+    console.log('episodeUploadNovelId:', episodeUploadNovelId);
     setNovelFeedback({ message: '', error: '' });
 
     if (!novelForm.title.trim()) {
+      console.log('No title provided!');
       setNovelFeedback({ message: '', error: 'Novel title is required.' });
       return;
     }
