@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
+import fs from 'fs';
 import { readDb, writeDb, publicWriter, publicNovel, slugify } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,12 +28,8 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = path.join(__dirname, 'uploads', 'novels');
     // Ensure the directory exists recursively
-    import('fs').then(fs => {
-      fs.mkdirSync(uploadDir, { recursive: true });
-      cb(null, uploadDir);
-    }).catch(err => {
-      cb(err);
-    });
+    fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
