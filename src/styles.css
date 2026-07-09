@@ -132,9 +132,9 @@ main {
 .brand-mark__icon {
   display: grid;
   place-items: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 1rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.25rem;
   color: var(--paper);
   background: linear-gradient(135deg, var(--plum-800), var(--plum-500));
   box-shadow: var(--shadow);
@@ -196,14 +196,15 @@ main {
   width: 80%;
   max-width: 320px;
   height: 100%;
-  background: white;
+  background: linear-gradient(180deg, white, rgba(251,248,251,0.98));
   z-index: 999;
-  transition: right 0.3s ease-in-out;
-  padding: 5rem 2rem 2rem;
+  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 5.5rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+  box-shadow: -8px 0 40px rgba(88,63,88,0.15);
+  border-left: 1px solid rgba(88,63,88,0.08);
 }
 
 .drawer.open {
@@ -213,40 +214,54 @@ main {
 .drawer .topbar__nav-divider {
   width: 100%;
   height: 1px;
-  background: rgba(88, 63, 88, 0.2);
+  background: linear-gradient(90deg, transparent, rgba(88, 63, 88, 0.25), transparent);
 }
 
 .drawer a,
 .drawer button {
   width: 100%;
   text-align: left;
-  padding: 0.8rem 0.75rem;
+  padding: 0.9rem 1rem;
   font-size: 1rem;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
   color: #583f58;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .drawer a:hover,
 .drawer button:hover {
-  background: rgba(88, 63, 88, 0.1);
-  color: #583f58;
+  background: rgba(88, 63, 88, 0.08);
+  color: #3b283b;
+  border-color: rgba(88,63,88,0.12);
+  transform: translateX(4px);
+}
+
+.drawer a:active,
+.drawer button:active {
+  transform: translateX(2px);
 }
 
 .drawer .topbar__nav-admin {
-  padding: 0.8rem 0.75rem;
+  padding: 0.9rem 1rem;
   width: 100%;
-  border-radius: 0.5rem;
-  background: #583f58 !important;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--plum-800), var(--plum-700)) !important;
   color: white !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(88,63,88,0.2);
+}
+
+.drawer .topbar__nav-admin:hover {
+  box-shadow: 0 6px 16px rgba(88,63,88,0.25);
+  transform: translateY(-1px) !important;
 }
 
 /* Mobile styles */
