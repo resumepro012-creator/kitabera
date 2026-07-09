@@ -321,15 +321,16 @@ main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  padding: 0;
+  width: auto;
+  height: auto;
+  padding: 0.65rem 1rem;
   border-radius: 999px;
   color: var(--paper);
   background: #583f58 !important;
   border-color: #583f58 !important;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.02em;
+  font-size: 0.9rem;
 }
 
 .topbar__nav-admin--desktop {
@@ -507,6 +508,15 @@ main {
   color: var(--paper);
   background: #583f58;
   box-shadow: 0 12px 26px rgba(88, 63, 88, 0.22);
+}
+.primary-button:disabled,
+.secondary-button:disabled,
+.danger-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  background: #9e8a9e !important;
 }
 
 .secondary-button {

@@ -471,10 +471,9 @@ function AppShell({ children }) {
       <Link to="/popular-novels" onClick={closeDrawer}>Popular Novels</Link>
       <Link to="/digest" onClick={closeDrawer}>Digest</Link>
       <span className="topbar__nav-divider" aria-hidden="true" />
-      {/* Desktop: Show "Ae", Mobile: Show "Admin Login" */}
+      {/* Both Desktop and Mobile: Show "Admin Login" */}
       <Link to="/admin/login" className="topbar__nav-admin" aria-label="Admin login" title="Admin login" onClick={closeDrawer}>
-        <span className="topbar__nav-admin--desktop">Ae</span>
-        <span className="topbar__nav-admin--mobile">Admin Login</span>
+        Admin Login
       </Link>
     </>
   );
@@ -2204,6 +2203,15 @@ function AdminDashboardPage() {
                     >
                       {!novelPdf ? 'Select PDF file to upload' : 'Upload novel'}
                     </button>
+                    {(!novelPdf || !novelForm.title.trim()) && (
+                      <small style={{ 
+                        color: "var(--plum-700)", 
+                        marginTop: "0.5rem", 
+                        display: "block" 
+                      }}>
+                        {!novelForm.title.trim() ? "Please enter a novel title first!" : "Please select a PDF file first!"}
+                      </small>
+                    )}
                   </>
                 )}
                 {novelFeedback.message ? <div className="state-card state-card--success">{novelFeedback.message}</div> : null}
