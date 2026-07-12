@@ -38,7 +38,6 @@ import instagramIcon from './assets/instagram.jfif';
 import tiktokIcon from './assets/tiktok.jfif';
 import watsappIcon from './assets/watsapp.jfif';
 import youtubeIcon from './assets/youtube.jfif';
-import PdfReader from './components/PdfReader';
 
 const CATEGORY_OPTIONS = [
   { key: 'islamic', label: 'Islamic' },
@@ -732,17 +731,6 @@ function DigestPage() {
                   By {novel.writer?.name || 'Unknown Writer'}
                 </div>
                 <div className="library-card__actions">
-                  <Link 
-                    to={`/reader/${novel.fileUrl.split('/').pop()}`} 
-                    className="secondary-button"
-                    onClick={(e) => {
-                      console.log('[Digest Read Online] Clicked!');
-                      console.log('[Digest Read Online] Novel fileUrl:', novel.fileUrl);
-                      console.log('[Digest Read Online] Navigating to:', `/reader/${novel.fileUrl.split('/').pop()}`);
-                    }}
-                  >
-                    Read Online
-                  </Link>
                   <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button">
                     Download
                   </a>
@@ -1041,18 +1029,6 @@ function NovelPage() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <Link
-                        to={`/reader/${ep.fileUrl.split('/').pop()}`}
-                        className="secondary-button"
-                        style={{ minHeight: '2.25rem', padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
-                        onClick={(e) => {
-                          console.log('[Novel Page Episode Read Online] Clicked!');
-                          console.log('[Novel Page Episode Read Online] Episode fileUrl:', ep.fileUrl);
-                          console.log('[Novel Page Episode Read Online] Navigating to:', `/reader/${ep.fileUrl.split('/').pop()}`);
-                        }}
-                      >
-                        Read Online
-                      </Link>
                       <a
                         href={`/api/download/${ep.fileUrl.split('/').pop()}`}
                         className="primary-button"
@@ -1311,26 +1287,14 @@ function ExplorePage() {
                         By {novel.writer?.name || 'Unknown Writer'}
                       </div>
                       <div className="library-card__actions">
-                        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginBottom: '0.5rem' }}>
+                        <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
                           <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                             Writer page
                           </Link>
-                          <Link 
-                            to={`/reader/${novel.fileUrl.split('/').pop()}`} 
-                            className="secondary-button" 
-                            style={{ flex: 1, justifyContent: 'center' }}
-                            onClick={(e) => {
-                              console.log('[Explore Search Read Online] Clicked!');
-                              console.log('[Explore Search Read Online] Novel fileUrl:', novel.fileUrl);
-                              console.log('[Explore Search Read Online] Navigating to:', `/reader/${novel.fileUrl.split('/').pop()}`);
-                            }}
-                          >
-                            Read Online
-                          </Link>
+                          <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                            Download
+                          </a>
                         </div>
-                        <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ width: '100%', justifyContent: 'center' }}>
-                          Download
-                        </a>
                       </div>
                     </article>
                   );
@@ -1417,26 +1381,14 @@ function ExplorePage() {
                       </span>
                     </div>
                     <div className="library-card__actions">
-                      <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
                         <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                           Writer page
                         </Link>
-                        <Link 
-                          to={`/reader/${novel.fileUrl.split('/').pop()}`} 
-                          className="secondary-button" 
-                          style={{ flex: 1, justifyContent: 'center' }}
-                          onClick={(e) => {
-                            console.log('[Explore Read Online] Clicked!');
-                            console.log('[Explore Read Online] Novel fileUrl:', novel.fileUrl);
-                            console.log('[Explore Read Online] Navigating to:', `/reader/${novel.fileUrl.split('/').pop()}`);
-                          }}
-                        >
-                          Read Online
-                        </Link>
+                        <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                          Download
+                        </a>
                       </div>
-                      <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ width: '100%', justifyContent: 'center' }}>
-                        Download
-                      </a>
                     </div>
                   </article>
                 ))}
@@ -1608,18 +1560,6 @@ function WriterPage() {
                             {downloading ? 'Downloading...' : 'Download Complete Novel'}
                           </button>
                         )}
-                        <Link
-                          to={`/reader/${(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl).split('/').pop()}`}
-                          className="secondary-button"
-                          onClick={(e) => {
-                            const fileUrl = activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl;
-                            console.log('[Writer Page Open PDF] Clicked!');
-                            console.log('[Writer Page Open PDF] fileUrl:', fileUrl);
-                            console.log('[Writer Page Open PDF] Navigating to:', `/reader/${fileUrl.split('/').pop()}`);
-                          }}
-                        >
-                          Open {activeEpisode ? activeEpisode.title : 'PDF'}
-                        </Link>
                         <a
                           href={`/api/download/${(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl).split('/').pop()}`}
                           className="primary-button"
@@ -3123,7 +3063,6 @@ export default function App() {
         <Route path="/explore/:category/:subcategory" element={<ExplorePage />} />
         <Route path="/novel/:id" element={<NovelPage />} />
         <Route path="/writer/:slug" element={<WriterPage />} />
-        <Route path="/reader/:id" element={<PdfReader />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="/admin/manage" element={<AdminManagePage />} />
