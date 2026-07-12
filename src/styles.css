@@ -723,14 +723,22 @@ main {
 
 /* Crop/zoom Adan Noor's image */
 .team-card__media img[src*="adanNoor"] {
-  transform: scale(1.2);
+  transform: scale(1.3);
   transform-origin: center;
 }
 
-/* Crop/zoom Gmail icon */
+/* Fix Gmail icon: more crop/zoom, better fit */
+.contact-card__icon--mail {
+  overflow: hidden !important;
+  background: white !important; /* Remove purple background */
+}
+
 .contact-card__icon--mail img {
-  transform: scale(1.15);
-  transform-origin: center;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transform: scale(1.4) !important;
+  transform-origin: center !important;
 }
 
 .team-card__body {
