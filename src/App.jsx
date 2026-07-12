@@ -38,6 +38,7 @@ import instagramIcon from './assets/instagram.jfif';
 import tiktokIcon from './assets/tiktok.jfif';
 import watsappIcon from './assets/watsapp.jfif';
 import youtubeIcon from './assets/youtube.jfif';
+import PdfReader from './components/PdfReader';
 
 const CATEGORY_OPTIONS = [
   { key: 'islamic', label: 'Islamic' },
@@ -731,9 +732,9 @@ function DigestPage() {
                   By {novel.writer?.name || 'Unknown Writer'}
                 </div>
                 <div className="library-card__actions">
-                  <a href={`/api/view/${novel.fileUrl.split('/').pop()}`} target="_blank" rel="noreferrer" className="secondary-button">
+                  <Link to={`/reader/${novel.fileUrl.split('/').pop()}`} className="secondary-button">
                     Read Online
-                  </a>
+                  </Link>
                   <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button">
                     Download
                   </a>
@@ -1032,15 +1033,13 @@ function NovelPage() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <a
-                        href={`/api/view/${ep.fileUrl.split('/').pop()}`}
-                        target="_blank"
-                        rel="noreferrer"
+                      <Link
+                        to={`/reader/${ep.fileUrl.split('/').pop()}`}
                         className="secondary-button"
                         style={{ minHeight: '2.25rem', padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
                       >
                         Read Online
-                      </a>
+                      </Link>
                       <a
                         href={`/api/download/${ep.fileUrl.split('/').pop()}`}
                         className="primary-button"
@@ -1303,9 +1302,9 @@ function ExplorePage() {
                           <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                             Writer page
                           </Link>
-                          <a href={`/api/view/${novel.fileUrl.split('/').pop()}`} target="_blank" rel="noreferrer" className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                          <Link to={`/reader/${novel.fileUrl.split('/').pop()}`} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                             Read Online
-                          </a>
+                          </Link>
                         </div>
                         <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ width: '100%', justifyContent: 'center' }}>
                           Download
@@ -1400,9 +1399,9 @@ function ExplorePage() {
                         <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                           Writer page
                         </Link>
-                        <a href={`/api/view/${novel.fileUrl.split('/').pop()}`} target="_blank" rel="noreferrer" className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                        <Link to={`/reader/${novel.fileUrl.split('/').pop()}`} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                           Read Online
-                        </a>
+                        </Link>
                       </div>
                       <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ width: '100%', justifyContent: 'center' }}>
                         Download
@@ -3087,6 +3086,7 @@ export default function App() {
         <Route path="/explore/:category/:subcategory" element={<ExplorePage />} />
         <Route path="/novel/:id" element={<NovelPage />} />
         <Route path="/writer/:slug" element={<WriterPage />} />
+        <Route path="/reader/:id" element={<PdfReader />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="/admin/manage" element={<AdminManagePage />} />

@@ -23,30 +23,37 @@ app.use(express.json());
 // Cache static files for 1 day to speed up mobile loading
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '1d' }));
 
-// Endpoint to view file in browser (inline)
+// Endpoint to view file in browser (inline) - FULL FIX
 app.get('/api/view/:filename', async (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(__dirname, 'uploads', 'novels', filename);
   
-  // Aggressive headers to force inline display in browser
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `inline; filename="${filename}"');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: 'File not found' });
+  }
   
-  // Use sendFile with explicit headers
-  res.sendFile(filePath, {
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `inline; filename="'+filename+'"'
-    }
-  }, (err) => {
-    if (err) {
-      res.status(404).json({ message: 'File not found' });
-    }
+  // Get file size for Content-Length
+  const stat = fs.statSync(filePath);
+  
+  // FORCE INLINE DISPLAY - ALL POSSIBLE HEADERS
+  res.writeHead(200, {
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': `inline; filename="${filename}"`,
+    'Content-Length': stat.size,
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'SAMEORIGIN',
+    'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+    'Accept-Ranges': 'bytes'
+  });
+  
+  // Stream the file
+  const readStream = fs.createReadStream(filePath);
+  readStream.pipe(res);
+  readStream.on('error', (err) => {
+    res.status(500).json({ message: 'Error reading file' });
   });
 });
 
@@ -94,7 +101,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, `${Date.now()}-${randomUUID()}${ext}`);
+    cb(null, Date.now() + '-' + randomUUID() + ext);
   }
 });
 

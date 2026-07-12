@@ -731,13 +731,17 @@ main {
 .contact-card__icon--mail {
   overflow: hidden !important;
   background: white !important; /* Remove purple background */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .contact-card__icon--mail img {
-  width: 100% !important;
-  height: 100% !important;
+  width: 120% !important;
+  height: 120% !important;
   object-fit: cover !important;
-  transform: scale(1.4) !important;
+  transform: scale(1.5) !important;
   transform-origin: center !important;
 }
 
