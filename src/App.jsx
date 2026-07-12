@@ -19,7 +19,7 @@ import {
 import logo from './assets/kitabera logo.jpeg';
 import heroVideo from './assets/video.mp4';
 import taibaFounder from './assets/Taiba Founder.jpeg';
-import adanNoor from './assets/adanNoor.jfif';
+import adaaan from './assets/adaaan.jpeg';
 import adanCoFounder from './assets/adan co-founder.jpeg';
 import auraManager from './assets/aura manager.jpeg';
 import nimalVoiceArtist1 from './assets/Nimal voiceartist 1.jpeg';
@@ -134,7 +134,7 @@ const teamSections = {
       title: 'Co-Founder & Editor',
       bio: 'Supports publishing workflows, community growth, and the day-to-day creative roadmap.',
       instagram: 'https://www.instagram.com/adan_theeditor?igsh=Mm5hbXUwMjVmeGpx',
-      image: adanNoor
+      image: adaaan
     }
   ],
   manager: {

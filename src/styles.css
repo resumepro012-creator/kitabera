@@ -722,7 +722,8 @@ main {
 }
 
 /* Crop/zoom Adan Noor's image */
-.team-card__media img[src*="adanNoor"] {
+.team-card__media img[src*="adanNoor"],
+.team-card__media img[src*="adaaan"] {
   transform: scale(1.3);
   transform-origin: center;
 }

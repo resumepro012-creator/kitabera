@@ -2,71 +2,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import { getLibrary, apiAsset } from '../api';
 
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const PdfReader = () => {
-  const { id } = useParams(); // id is filename (e.g., "12345-novel.pdf")
+  const { id } = useParams(); // id is filename
   const [pdf, setPdf] = useState(null);
   const [pageNum, setPageNum] = useState(1);
   const [numPages, setNumPages] = useState(0);
   const [scale, setScale] = useState(1.0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [libraryData, setLibraryData] = useState([]);
   const canvasRef = useRef(null);
 
-  console.log('[PdfReader] Component rendered');
-  console.log('[PdfReader] useParams id:', id);
-  console.log('[PdfReader] window.location:', window.location.href);
-
-  // Get file URL from novels/episodes
-  const getFileUrl = () => {
-    // Check novels first
-    for (const novel of libraryData) {
-      if (novel.fileUrl && novel.fileUrl.split('/').pop() === id) {
-        const url = apiAsset(novel.fileUrl);
-        console.log('[PdfReader] Found novel fileUrl:', url);
-        return url;
-      }
-      // Check episodes in this novel
-      if (novel.episodes) {
-        for (const ep of novel.episodes) {
-          if (ep.fileUrl && ep.fileUrl.split('/').pop() === id) {
-            const url = apiAsset(ep.fileUrl);
-            console.log('[PdfReader] Found episode fileUrl:', url);
-            return url;
-          }
-        }
-      }
-    }
-    console.log('[PdfReader] No fileUrl found for id:', id);
-    return null;
-  };
-
-  const fileUrl = getFileUrl();
-
-  // Fetch library data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log('[PdfReader] Fetching library data...');
-        const data = await getLibrary();
-        console.log('[PdfReader] Library data fetched:', data);
-        setLibraryData(data);
-      } catch (err) {
-        console.error('[PdfReader] Error fetching library data:', err);
-      }
-    };
-    fetchData();
-  }, []);
+  const fileUrl = `/api/view/${id}`;
 
   // Load PDF
   useEffect(() => {
-    console.log('[PdfReader] fileUrl changed:', fileUrl);
-    if (!fileUrl) {
+    console.log('[PdfReader] Loading PDF from:', fileUrl);
+    if (!id) {
       setError('File not found');
       setLoading(false);
       return;
@@ -74,7 +29,6 @@ const PdfReader = () => {
 
     const loadPdf = async () => {
       try {
-        console.log('[PdfReader] Loading PDF from:', fileUrl);
         setLoading(true);
         setError('');
         const loadingTask = pdfjsLib.getDocument(fileUrl);
@@ -92,7 +46,7 @@ const PdfReader = () => {
     };
 
     loadPdf();
-  }, [fileUrl]);
+  }, [id]);
 
   // Render page
   useEffect(() => {
