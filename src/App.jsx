@@ -1451,7 +1451,7 @@ function WriterPage() {
     try {
       for (const ep of activeNovel.episodes) {
         const link = document.createElement('a');
-        link.href = apiAsset(ep.fileUrl);
+        link.href = `/api/download/${ep.fileUrl.split('/').pop()}`;
         link.setAttribute('download', `${activeNovel.title} - ${ep.title}.pdf`);
         document.body.appendChild(link);
         link.click();
@@ -1577,17 +1577,14 @@ function WriterPage() {
                             {downloading ? 'Downloading...' : 'Download Complete Novel'}
                           </button>
                         )}
-                        <a
-                          href={apiAsset(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl)}
-                          target="_blank"
-                          rel="noreferrer"
+                        <Link
+                          to={`/reader/${(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl).split('/').pop()}`}
                           className="secondary-button"
                         >
                           Open {activeEpisode ? activeEpisode.title : 'PDF'}
-                        </a>
+                        </Link>
                         <a
-                          href={apiAsset(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl)}
-                          download
+                          href={`/api/download/${(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl).split('/').pop()}`}
                           className="primary-button"
                         >
                           Download {activeEpisode ? activeEpisode.title : 'PDF'}
@@ -1618,7 +1615,7 @@ function WriterPage() {
                     <div className="pdf-frame-wrap">
                       <iframe
                         title={activeEpisode ? `${activeNovel.title} - ${activeEpisode.title}` : activeNovel.title}
-                        src={apiAsset(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl)}
+                        src={`/api/view/${(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl).split('/').pop()}`}
                         className="pdf-frame"
                       />
                     </div>
