@@ -721,6 +721,18 @@ main {
   display: block;
 }
 
+/* Crop/zoom Adan Noor's image */
+.team-card__media img[src*="adanNoor"] {
+  transform: scale(1.2);
+  transform-origin: center;
+}
+
+/* Crop/zoom Gmail icon */
+.contact-card__icon--mail img {
+  transform: scale(1.15);
+  transform-origin: center;
+}
+
 .team-card__body {
   display: grid;
   gap: 0.7rem;
