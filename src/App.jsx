@@ -19,6 +19,7 @@ import {
 import logo from './assets/kitabera logo.jpeg';
 import heroVideo from './assets/video.mp4';
 import taibaFounder from './assets/Taiba Founder.jpeg';
+import adanNoor from './assets/adanNoor.jfif';
 import adanCoFounder from './assets/adan co-founder.jpeg';
 import auraManager from './assets/aura manager.jpeg';
 import nimalVoiceArtist1 from './assets/Nimal voiceartist 1.jpeg';
@@ -121,23 +122,23 @@ const WHY_CHOOSE_POINTS = [
 const teamSections = {
   founders: [
     {
-      name: 'Taiba',
+      name: 'Taiba ijaz',
       title: 'Founder & Voice Artist',
       bio: 'Shapes the reading experience, editorial direction, and long-term vision for Kitab Era.',
       instagram: 'https://www.instagram.com/taibaijazwriter?igsh=NTFocDcydDU3ZnF5',
       image: taibaFounder
     },
     {
-      name: 'Adan',
+      name: 'Adan Noor',
       title: 'Co-Founder & Editor',
       bio: 'Supports publishing workflows, community growth, and the day-to-day creative roadmap.',
       instagram: 'https://www.instagram.com/adan_theeditor?igsh=Mm5hbXUwMjVmeGpx',
-      image: adanCoFounder
+      image: adanNoor
     }
   ],
   manager: {
-    name: 'Muniza',
-    title: 'Manager',
+    name: 'Muniza Batool',
+    title: 'Manager & voice-Artist',
     bio: 'Keeps publishing schedules aligned and helps the team stay organized and responsive.',
     instagram: 'https://www.instagram.com/itx._.muniza?igsh=d29iNDJ3MGpncTIw',
     image: munizaVoiceArtist2
@@ -152,7 +153,7 @@ const teamSections = {
     },
 
     {
-      name: 'Ammar',
+      name: 'Ammar Ahmed',
       title: 'Voice Artist',
       bio: 'Specializes in expressive delivery for dialogue and dramatic scenes.',
       instagram: 'https://www.instagram.com/iamasimplemuslim?igsh=eTFyc2R2bzY0bWtz',
@@ -186,24 +187,24 @@ const teamSections = {
       title: 'Editor',
       bio: 'Editor in kitab Era Team , edit reels and pick best of novels lines',
       instagram: 'https://www.instagram.com/khuwab.safar?igsh=dzY3aTQ2aDBibXZv',
-      image: aleezaEditor
+      image: asmaEditor  
     },
     {
-      name: 'Qandeel',
+      name: 'Qandeel Fatima',
       title: 'Editor',
       bio: 'Helps improve flow and presentation across the published library.',
       instagram: 'https://www.instagram.com/qandeel_fatima45?igsh=MmE1Y2p0b2ltenV5',
       image: qandeelEditor
     },
     {
-      name: 'Asma',
+      name: 'Asma Zahir',
       title: 'Editor',
       bio: 'Makes sure the reading experience feels polished across devices.',
       instagram: 'https://www.instagram.com/lost_1.101?igsh=M3dpNmc1aXMxeHFk',
-      image: asmaEditor
+      image: aleezaEditor
     },
     {
-      name: 'Maheen',
+      name: 'Maheen Amir',
       title: 'Editor',
       bio: 'Keeps tone, layout, and content presentation aligned with the brand.',
       instagram: 'https://www.instagram.com/lunahmeen?igsh=MTFlbjBxMnlodHJsaA==',
@@ -730,10 +731,10 @@ function DigestPage() {
                   By {novel.writer?.name || 'Unknown Writer'}
                 </div>
                 <div className="library-card__actions">
-                  <a href={apiAsset(novel.fileUrl)} target="_blank" rel="noreferrer" className="secondary-button">
+                  <a href={`/api/view/${novel.fileUrl.split('/').pop()}`} target="_blank" rel="noreferrer" className="secondary-button">
                     Read Online
                   </a>
-                  <a href={apiAsset(novel.fileUrl)} download className="primary-button">
+                  <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button">
                     Download
                   </a>
                 </div>
@@ -805,7 +806,10 @@ function ContactPage() {
           {contactItems.map((item, index) => (
             <a key={index} href={item.href} target="_blank" rel="noreferrer" className="contact-card">
               <div className={`contact-card__icon contact-card__icon--${item.type}`}>
-                <SocialIcon type={item.type} />
+                <SocialIcon 
+                  type={item.type} 
+                  useImage={['tiktok', 'whatsapp', 'mail'].includes(item.type)} 
+                />
               </div>
               <div className="contact-card__content">
                 <h3>{item.label}</h3>
@@ -922,8 +926,7 @@ function NovelPage() {
     try {
       for (const ep of novel.episodes) {
         const link = document.createElement('a');
-        link.href = apiAsset(ep.fileUrl);
-        link.setAttribute('download', `${novel.title} - ${ep.title}.pdf`);
+        link.href = `/api/download/${ep.fileUrl.split('/').pop()}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1030,7 +1033,7 @@ function NovelPage() {
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <a
-                        href={apiAsset(ep.fileUrl)}
+                        href={`/api/view/${ep.fileUrl.split('/').pop()}`}
                         target="_blank"
                         rel="noreferrer"
                         className="secondary-button"
@@ -1039,8 +1042,7 @@ function NovelPage() {
                         Read Online
                       </a>
                       <a
-                        href={apiAsset(ep.fileUrl)}
-                        download
+                        href={`/api/download/${ep.fileUrl.split('/').pop()}`}
                         className="primary-button"
                         style={{ minHeight: '2.25rem', padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
                       >
@@ -1297,13 +1299,15 @@ function ExplorePage() {
                         By {novel.writer?.name || 'Unknown Writer'}
                       </div>
                       <div className="library-card__actions">
-                        <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button">
-                          Writer page
-                        </Link>
-                        <a href={apiAsset(novel.fileUrl)} target="_blank" rel="noreferrer" className="secondary-button">
-                          Read Online
-                        </a>
-                        <a href={apiAsset(novel.fileUrl)} download className="primary-button">
+                        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginBottom: '0.5rem' }}>
+                          <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                            Writer page
+                          </Link>
+                          <a href={`/api/view/${novel.fileUrl.split('/').pop()}`} target="_blank" rel="noreferrer" className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                            Read Online
+                          </a>
+                        </div>
+                        <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ width: '100%', justifyContent: 'center' }}>
                           Download
                         </a>
                       </div>
@@ -1392,13 +1396,15 @@ function ExplorePage() {
                       </span>
                     </div>
                     <div className="library-card__actions">
-                      <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button">
-                        Writer page
-                      </Link>
-                      <a href={apiAsset(novel.fileUrl)} target="_blank" rel="noreferrer" className="secondary-button">
-                        Read Online
-                      </a>
-                      <a href={apiAsset(novel.fileUrl)} download className="primary-button">
+                      <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginBottom: '0.5rem' }}>
+                        <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                          Writer page
+                        </Link>
+                        <a href={`/api/view/${novel.fileUrl.split('/').pop()}`} target="_blank" rel="noreferrer" className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                          Read Online
+                        </a>
+                      </div>
+                      <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ width: '100%', justifyContent: 'center' }}>
                         Download
                       </a>
                     </div>

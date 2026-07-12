@@ -22,6 +22,54 @@ app.use(cors());
 app.use(express.json());
 // Cache static files for 1 day to speed up mobile loading
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '1d' }));
+
+// Endpoint to view file in browser (inline)
+app.get('/api/view/:filename', async (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'uploads', 'novels', filename);
+  
+  // Set Content-Disposition to inline to view in browser
+  res.setHeader('Content-Disposition', 'inline');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).json({ message: 'File not found' });
+    }
+  });
+});
+
+// Endpoint to download file with original filename
+app.get('/api/download/:filename', async (req, res) => {
+  const filename = req.params.filename;
+  const db = await readDb();
+  
+  // Find original filename in novels or episodes
+  let originalFilename = filename;
+  
+  // Check novels
+  const novel = db.novels.find(n => n.fileUrl?.includes(filename));
+  if (novel?.originalFilename) {
+    originalFilename = novel.originalFilename;
+  } else {
+    // Check episodes
+    for (const n of db.novels) {
+      if (n.episodes) {
+        const ep = n.episodes.find(e => e.fileUrl?.includes(filename));
+        if (ep?.originalFilename) {
+          originalFilename = ep.originalFilename;
+          break;
+        }
+      }
+    }
+  }
+  
+  const filePath = path.join(__dirname, 'uploads', 'novels', filename);
+  res.download(filePath, originalFilename, (err) => {
+    if (err) {
+      res.status(404).json({ message: 'File not found' });
+    }
+  });
+});
+
 app.use(express.static(path.join(__dirname, '..', 'dist'), { maxAge: '1d' }));
 
 const storage = multer.diskStorage({
@@ -203,6 +251,7 @@ app.post('/api/admin/novels', authMiddleware, upload.single('pdf'), async (req, 
       title: episodeTitle || `Episode ${existingNovel.episodes.length + 1}`,
       file: req.file.filename,
       fileUrl: `/uploads/novels/${req.file.filename}`,
+      originalFilename: req.file.originalname,
       createdAt: new Date().toISOString()
     };
 
@@ -233,6 +282,7 @@ app.post('/api/admin/novels', authMiddleware, upload.single('pdf'), async (req, 
     category: category || 'islamic',
     subcategory: subcategory || '',
     fileUrl: req.file ? `/uploads/novels/${req.file.filename}` : '',
+    originalFilename: req.file ? req.file.originalname : '',
     episodes: subcategory === 'episodic-novel' ? [] : undefined,
     createdAt: new Date().toISOString()
   };
