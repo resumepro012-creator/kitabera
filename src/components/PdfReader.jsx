@@ -18,22 +18,31 @@ const PdfReader = () => {
   const [libraryData, setLibraryData] = useState([]);
   const canvasRef = useRef(null);
 
+  console.log('[PdfReader] Component rendered');
+  console.log('[PdfReader] useParams id:', id);
+  console.log('[PdfReader] window.location:', window.location.href);
+
   // Get file URL from novels/episodes
   const getFileUrl = () => {
     // Check novels first
     for (const novel of libraryData) {
       if (novel.fileUrl && novel.fileUrl.split('/').pop() === id) {
-        return apiAsset(novel.fileUrl);
+        const url = apiAsset(novel.fileUrl);
+        console.log('[PdfReader] Found novel fileUrl:', url);
+        return url;
       }
       // Check episodes in this novel
       if (novel.episodes) {
         for (const ep of novel.episodes) {
           if (ep.fileUrl && ep.fileUrl.split('/').pop() === id) {
-            return apiAsset(ep.fileUrl);
+            const url = apiAsset(ep.fileUrl);
+            console.log('[PdfReader] Found episode fileUrl:', url);
+            return url;
           }
         }
       }
     }
+    console.log('[PdfReader] No fileUrl found for id:', id);
     return null;
   };
 
@@ -43,10 +52,12 @@ const PdfReader = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('[PdfReader] Fetching library data...');
         const data = await getLibrary();
+        console.log('[PdfReader] Library data fetched:', data);
         setLibraryData(data);
       } catch (err) {
-        console.error(err);
+        console.error('[PdfReader] Error fetching library data:', err);
       }
     };
     fetchData();
@@ -54,6 +65,7 @@ const PdfReader = () => {
 
   // Load PDF
   useEffect(() => {
+    console.log('[PdfReader] fileUrl changed:', fileUrl);
     if (!fileUrl) {
       setError('File not found');
       setLoading(false);
@@ -62,16 +74,18 @@ const PdfReader = () => {
 
     const loadPdf = async () => {
       try {
+        console.log('[PdfReader] Loading PDF from:', fileUrl);
         setLoading(true);
         setError('');
         const loadingTask = pdfjsLib.getDocument(fileUrl);
         const pdfDoc = await loadingTask.promise;
+        console.log('[PdfReader] PDF loaded, pages:', pdfDoc.numPages);
         setPdf(pdfDoc);
         setNumPages(pdfDoc.numPages);
         setPageNum(1);
       } catch (err) {
+        console.error('[PdfReader] Error loading PDF:', err);
         setError('Failed to load PDF: ' + err.message);
-        console.error(err);
       } finally {
         setLoading(false);
       }

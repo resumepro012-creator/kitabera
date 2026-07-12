@@ -732,7 +732,15 @@ function DigestPage() {
                   By {novel.writer?.name || 'Unknown Writer'}
                 </div>
                 <div className="library-card__actions">
-                  <Link to={`/reader/${novel.fileUrl.split('/').pop()}`} className="secondary-button">
+                  <Link 
+                    to={`/reader/${novel.fileUrl.split('/').pop()}`} 
+                    className="secondary-button"
+                    onClick={(e) => {
+                      console.log('[Digest Read Online] Clicked!');
+                      console.log('[Digest Read Online] Novel fileUrl:', novel.fileUrl);
+                      console.log('[Digest Read Online] Navigating to:', `/reader/${novel.fileUrl.split('/').pop()}`);
+                    }}
+                  >
                     Read Online
                   </Link>
                   <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button">
@@ -1037,6 +1045,11 @@ function NovelPage() {
                         to={`/reader/${ep.fileUrl.split('/').pop()}`}
                         className="secondary-button"
                         style={{ minHeight: '2.25rem', padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
+                        onClick={(e) => {
+                          console.log('[Novel Page Episode Read Online] Clicked!');
+                          console.log('[Novel Page Episode Read Online] Episode fileUrl:', ep.fileUrl);
+                          console.log('[Novel Page Episode Read Online] Navigating to:', `/reader/${ep.fileUrl.split('/').pop()}`);
+                        }}
                       >
                         Read Online
                       </Link>
@@ -1302,7 +1315,16 @@ function ExplorePage() {
                           <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                             Writer page
                           </Link>
-                          <Link to={`/reader/${novel.fileUrl.split('/').pop()}`} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                          <Link 
+                            to={`/reader/${novel.fileUrl.split('/').pop()}`} 
+                            className="secondary-button" 
+                            style={{ flex: 1, justifyContent: 'center' }}
+                            onClick={(e) => {
+                              console.log('[Explore Search Read Online] Clicked!');
+                              console.log('[Explore Search Read Online] Novel fileUrl:', novel.fileUrl);
+                              console.log('[Explore Search Read Online] Navigating to:', `/reader/${novel.fileUrl.split('/').pop()}`);
+                            }}
+                          >
                             Read Online
                           </Link>
                         </div>
@@ -1399,7 +1421,16 @@ function ExplorePage() {
                         <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                           Writer page
                         </Link>
-                        <Link to={`/reader/${novel.fileUrl.split('/').pop()}`} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                        <Link 
+                          to={`/reader/${novel.fileUrl.split('/').pop()}`} 
+                          className="secondary-button" 
+                          style={{ flex: 1, justifyContent: 'center' }}
+                          onClick={(e) => {
+                            console.log('[Explore Read Online] Clicked!');
+                            console.log('[Explore Read Online] Novel fileUrl:', novel.fileUrl);
+                            console.log('[Explore Read Online] Navigating to:', `/reader/${novel.fileUrl.split('/').pop()}`);
+                          }}
+                        >
                           Read Online
                         </Link>
                       </div>
@@ -1580,6 +1611,12 @@ function WriterPage() {
                         <Link
                           to={`/reader/${(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl).split('/').pop()}`}
                           className="secondary-button"
+                          onClick={(e) => {
+                            const fileUrl = activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl;
+                            console.log('[Writer Page Open PDF] Clicked!');
+                            console.log('[Writer Page Open PDF] fileUrl:', fileUrl);
+                            console.log('[Writer Page Open PDF] Navigating to:', `/reader/${fileUrl.split('/').pop()}`);
+                          }}
                         >
                           Open {activeEpisode ? activeEpisode.title : 'PDF'}
                         </Link>
@@ -3068,6 +3105,9 @@ function ScrollAnimationObserver() {
 }
 
 export default function App() {
+  const location = useLocation();
+  console.log('[App] Current location:', location.pathname, location);
+  
   return (
     <>
       <ScrollAnimationObserver />
