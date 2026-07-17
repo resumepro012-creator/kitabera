@@ -161,13 +161,7 @@ const teamSections = {
     }
   ],
   editors: [
-    {
-      name: 'Aura Noor',
-      title: 'Editor',
-      bio: 'Editor in kitab Era Team , edit reels and pick best of novels lines',
-      instagram: 'https://www.instagram.com/aura_the_noor?igsh=a2d4eXA0NmNqandk',
-      image:auraManager
-    },
+   
     {
       name: 'Sadia',
       title: 'Editor',
