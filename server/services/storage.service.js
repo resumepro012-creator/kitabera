@@ -2,22 +2,35 @@ import { randomUUID } from 'crypto';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseBucket = process.env.SUPABASE_BUCKET;
+let cachedSupabase = null;
 
-if (!supabaseUrl || !supabaseServiceRoleKey || !supabaseBucket) {
-  throw new Error(
-    'Supabase is not configured. Set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and SUPABASE_BUCKET in your .env file.'
-  );
-}
-
-const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
+function getSupabaseClient() {
+  if (cachedSupabase) {
+    return cachedSupabase;
   }
-});
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseBucket = process.env.SUPABASE_BUCKET;
+
+  if (!supabaseUrl || !supabaseServiceRoleKey || !supabaseBucket) {
+    throw new Error(
+      'Supabase is not configured. Set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and SUPABASE_BUCKET in your .env file.'
+    );
+  }
+
+  cachedSupabase = {
+    client: createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }),
+    bucket: supabaseBucket
+  };
+
+  return cachedSupabase;
+}
 
 /**
  * Uploads a buffer to Supabase Storage and makes it publicly readable.
@@ -27,7 +40,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
  * @returns {Promise<{ url: string, path: string }>}
  */
 export async function uploadFile(buffer, destPath, contentType) {
-  const { error } = await supabase.storage
+  const { client, bucket: supabaseBucket } = getSupabaseClient();
+  const { error } = await client.storage
     .from(supabaseBucket)
     .upload(destPath, buffer, {
       contentType,
@@ -38,7 +52,7 @@ export async function uploadFile(buffer, destPath, contentType) {
     throw error;
   }
 
-  const { data: { publicUrl } } = supabase.storage
+  const { data: { publicUrl } } = client.storage
     .from(supabaseBucket)
     .getPublicUrl(destPath);
 
@@ -52,7 +66,8 @@ export async function deleteFile(destPath) {
   if (!destPath) return;
 
   try {
-    const { error } = await supabase.storage
+    const { client, bucket: supabaseBucket } = getSupabaseClient();
+    const { error } = await client.storage
       .from(supabaseBucket)
       .remove([destPath]);
 
@@ -74,8 +89,9 @@ export async function deleteFolder(prefix) {
   if (!prefix) return;
 
   try {
+    const { client, bucket: supabaseBucket } = getSupabaseClient();
     // First, list all files with the given prefix
-    const { data: files, error: listError } = await supabase.storage
+    const { data: files, error: listError } = await client.storage
       .from(supabaseBucket)
       .list(prefix);
 
@@ -85,7 +101,7 @@ export async function deleteFolder(prefix) {
 
     if (files && files.length > 0) {
       const filePaths = files.map(file => `${prefix}/${file.name}`);
-      const { error: deleteError } = await supabase.storage
+      const { error: deleteError } = await client.storage
         .from(supabaseBucket)
         .remove(filePaths);
 
