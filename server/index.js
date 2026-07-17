@@ -35,7 +35,8 @@ app.get('*', (req, res) => {
 // Error handling middleware
 app.use((error, _req, res, _next) => {
   console.error('Server error:', error);
-  res.status(500).json({ message: error.message || 'Internal server error' });
+  console.error('Error stack:', error.stack);
+  res.status(500).json({ message: error.message || 'Internal server error', stack: error.stack });
 });
 
 app.listen(PORT, '0.0.0.0', () => {

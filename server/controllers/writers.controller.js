@@ -79,7 +79,7 @@ export async function createWriter(req, res) {
     avatarPath
   });
 
-  res.status(201).json({ writer: publicWriter(writer, 0) });
+  res.status(201).json({ writer: publicWriter(writer) });
 }
 
 export async function updateWriter(req, res) {
@@ -122,7 +122,7 @@ export async function updateWriter(req, res) {
 
   const updated = await firestoreService.updateWriter(writer.id, fields);
   const novels = await firestoreService.listNovelsByWriter(writer.id);
-  res.json({ writer: publicWriter(updated, novels.length) });
+  res.json({ writer: publicWriter(updated) });
 }
 
 export async function deleteWriter(req, res) {
