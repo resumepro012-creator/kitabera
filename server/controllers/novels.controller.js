@@ -257,7 +257,7 @@ export async function updateNovel(req, res, next) {
     }
 
     const writer = await firestoreService.getWriter(novel.writerId);
-    const oldSlug = novel.slug || novelSlugFromTitle(novel.title);
+    const oldSlug = novel.novelSlug || novelSlugFromTitle(novel.title);
     const newSlug = novelSlugFromTitle(title);
 
     if (writer && oldSlug !== newSlug && novel.subcategory === 'episodic-novel' && subcategory === 'episodic-novel') {
@@ -272,7 +272,7 @@ export async function updateNovel(req, res, next) {
 
     const updatedNovel = await firestoreService.updateNovel(novel.id, {
       title,
-      slug: newSlug,
+      novelSlug: newSlug,
       summary: summary || novel.summary,
       category,
       subcategory
@@ -296,7 +296,7 @@ export async function deleteNovel(req, res, next) {
 
     const writer = await firestoreService.getWriter(novel.writerId);
     const episodes = await firestoreService.getEpisodesByNovelId(novel.id);
-    const novelSlug = novel.slug || novelSlugFromTitle(novel.title);
+    const novelSlug = novel.novelSlug || novelSlugFromTitle(novel.title);
 
     if (writer) {
       await uploadController.removeNovelFiles(writer.slug, novelSlug, episodes);
