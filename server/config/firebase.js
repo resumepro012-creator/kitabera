@@ -7,8 +7,16 @@ let cachedApp = null;
 function readCredentials() {
   const projectId = process.env.FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  let privateKey = process.env.FIREBASE_PRIVATE_KEY;
   const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
+
+  // Strip surrounding quotes if present
+  if (privateKey?.startsWith('"') && privateKey?.endsWith('"')) {
+    privateKey = privateKey.slice(1, -1);
+  }
+
+  // Replace both \n and \r\n with actual newlines
+  privateKey = privateKey?.replace(/\\r\\n|\\n/g, '\n');
 
   if (!projectId || !clientEmail || !privateKey || !storageBucket) {
     return null;

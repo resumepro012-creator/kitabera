@@ -3,9 +3,9 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "start": "npm run server",
+    "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider npm run server",
     "server": "node server/index.js",
-    "server:dev": "node --watch server/index.js",
+    "server:dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider node --watch server/index.js",
     "migrate": "node server/migrate-to-firestore.js",
     "dev": "vite",
     "build": "vite build",
@@ -14,6 +14,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",
     "cors": "^2.8.5",
+    "cross-env": "^10.1.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "firebase-admin": "^12.1.1",
