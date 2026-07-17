@@ -287,7 +287,9 @@ export async function updateNovel(req, res, next) {
 
 export async function deleteNovel(req, res, next) {
   try {
+    console.log("deleteNovel: starting, novelId:", req.params.id);
     const novel = await firestoreService.getNovel(req.params.id);
+    console.log("deleteNovel: got novel:", novel);
 
     if (!novel) {
       res.status(404).json({ message: 'Novel not found.' });
@@ -295,19 +297,29 @@ export async function deleteNovel(req, res, next) {
     }
 
     const writer = await firestoreService.getWriter(novel.writerId);
+    console.log("deleteNovel: got writer:", writer);
     const episodes = await firestoreService.getEpisodesByNovelId(novel.id);
+    console.log("deleteNovel: got episodes:", episodes);
     const novelSlug = novel.novelSlug || novelSlugFromTitle(novel.title);
+    console.log("deleteNovel: novelSlug:", novelSlug);
 
     if (writer) {
+      console.log("deleteNovel: removing files");
       await uploadController.removeNovelFiles(writer.slug, novelSlug, episodes);
+      console.log("deleteNovel: files removed");
     }
 
+    console.log("deleteNovel: deleting reviews");
     await firestoreService.deleteReviewsByNovelId(novel.id);
+    console.log("deleteNovel: deleting episodes");
     await firestoreService.deleteEpisodesByNovelId(novel.id);
+    console.log("deleteNovel: deleting novel");
     await firestoreService.deleteNovel(novel.id);
+    console.log("deleteNovel: done");
 
     res.json({ message: 'Novel deleted successfully.' });
   } catch (error) {
+    console.error("deleteNovel: error:", error);
     next(error);
   }
 }

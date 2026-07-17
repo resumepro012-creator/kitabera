@@ -63,8 +63,12 @@ export async function uploadFile(buffer, destPath, contentType) {
 }
 
 export async function deleteFile(destPath) {
-  if (!destPath) return;
+  if (!destPath) {
+    console.log("deleteFile: no destPath, skipping");
+    return;
+  }
 
+  console.log("deleteFile: deleting", destPath);
   try {
     const { client, bucket: supabaseBucket } = getSupabaseClient();
     const { error } = await client.storage
@@ -72,12 +76,15 @@ export async function deleteFile(destPath) {
       .remove([destPath]);
 
     if (error) {
+      console.log("deleteFile: error:", error);
       // Ignore "not found" errors
       if (!error.message.includes('not found')) {
         throw error;
       }
     }
+    console.log("deleteFile: done");
   } catch (error) {
+    console.log("deleteFile: catch error:", error);
     // Ignore "not found" errors
     if (!error.message?.includes('not found')) {
       throw error;
@@ -86,8 +93,12 @@ export async function deleteFile(destPath) {
 }
 
 export async function deleteFolder(prefix) {
-  if (!prefix) return;
+  if (!prefix) {
+    console.log("deleteFolder: no prefix, skipping");
+    return;
+  }
 
+  console.log("deleteFolder: prefix:", prefix);
   try {
     const { client, bucket: supabaseBucket } = getSupabaseClient();
     // First, list all files with the given prefix
@@ -96,20 +107,26 @@ export async function deleteFolder(prefix) {
       .list(prefix);
 
     if (listError) {
+      console.log("deleteFolder: listError:", listError);
       throw listError;
     }
+    console.log("deleteFolder: found files:", files);
 
     if (files && files.length > 0) {
       const filePaths = files.map(file => `${prefix}/${file.name}`);
+      console.log("deleteFolder: filePaths to delete:", filePaths);
       const { error: deleteError } = await client.storage
         .from(supabaseBucket)
         .remove(filePaths);
 
       if (deleteError) {
+        console.log("deleteFolder: deleteError:", deleteError);
         throw deleteError;
       }
     }
+    console.log("deleteFolder: done");
   } catch (error) {
+    console.log("deleteFolder: catch error:", error);
     // Ignore "not found" errors
     if (!error.message?.includes('not found')) {
       throw error;
