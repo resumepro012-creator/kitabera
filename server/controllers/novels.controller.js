@@ -10,7 +10,7 @@ import {
 import * as uploadController from './upload.controller.js';
 import { addEpisodeToNovel, createNovelWithUpload } from './episodes.controller.js';
 
-function publicNovel(novel) {
+function publicNovel(novel, _episodes) {
   return {
     id: novel.id,
     title: novel.title,
@@ -70,7 +70,7 @@ export async function getLibrary(req, res, next) {
   }
 }
 
-export async function getNovelById(req, res, next) {
+export async function getNovel(req, res, next) {
   try {
     const novelId = req.params.id;
     await firestoreService.incrementNovelViews(novelId);
@@ -109,6 +109,34 @@ export async function getPopularNovels(req, res, next) {
       .sort((left, right) => (right.averageRating || 0) - (left.averageRating || 0));
 
     res.json({ novels: popularNovels });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getAdminLibrary(req, res, next) {
+  try {
+    const writers = await firestoreService.getAllWriters();
+    const writersWithNovels = await Promise.all(
+      writers.map(async (writer) => {
+        const novels = await firestoreService.listNovelsByWriter(writer.id);
+        const novelsWithDetails = await Promise.all(
+          novels.map(async (novel) => {
+            const reviews = await firestoreService.listReviewsByNovel(novel.id);
+            return {
+              ...publicNovel(novel),
+              reviews,
+              averageRating: novel.averageRating || 0
+            };
+          })
+        );
+        return {
+          ...writer,
+          novels: novelsWithDetails
+        };
+      })
+    );
+    res.json({ writers: writersWithNovels });
   } catch (error) {
     next(error);
   }
@@ -190,6 +218,9 @@ export async function createNovel(req, res, next) {
     next(error);
   }
 }
+
+// Alias for the route
+export const createNovelOrEpisode = createNovel;
 
 export async function updateNovel(req, res, next) {
   try {

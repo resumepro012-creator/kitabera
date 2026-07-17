@@ -72,3 +72,7 @@ export function novelSlugFromTitle(title) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'novel';
 }
+
+export function mapReviewForApi(review) {
+  return review;
+}
