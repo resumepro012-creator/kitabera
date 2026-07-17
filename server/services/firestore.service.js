@@ -279,3 +279,4 @@ export function getNovel(novelId) { return getNovelById(novelId); }
 export function getEpisodesByNovelId(novelId) { return listEpisodesByNovel(novelId); }
 export function getReviewsByNovelId(novelId) { return listReviewsByNovel(novelId); }
 export function deleteReviewsByNovelId(novelId) { return deleteReviewsByNovel(novelId); }
+export function deleteEpisodesByNovelId(novelId) { return deleteEpisodesByNovel(novelId); }
