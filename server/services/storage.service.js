@@ -117,17 +117,17 @@ export async function deleteFolder(prefix) {
   }
 }
 
-export function buildPdfPath({ writerSlug, novelSlug, episodeNumber, originalName }) {
-  const extension = path.extname(originalName || '') || '.pdf';
+export function buildPdfPath({ writerSlug, novelSlug, episodeNumber, originalName, originalname }) {
+  const extension = path.extname(originalName || originalname || '') || '.pdf';
   return `pdfs/${writerSlug}/${novelSlug}/${episodeNumber}-${randomUUID()}${extension}`;
 }
 
-export function buildAvatarPath({ writerSlug, originalName }) {
-  const extension = path.extname(originalName || '') || '.jpg';
+export function buildAvatarPath({ writerSlug, originalName, originalname }) {
+  const extension = path.extname(originalName || originalname || '') || '.jpg';
   return `avatars/${writerSlug}-${randomUUID()}${extension}`;
 }
 
-export function buildCoverPath({ writerSlug, novelSlug, originalName }) {
-  const extension = path.extname(originalName || '') || '.jpg';
+export function buildCoverPath({ writerSlug, novelSlug, originalName, originalname }) {
+  const extension = path.extname(originalName || originalname || '') || '.jpg';
   return `covers/${writerSlug}/${novelSlug}-${randomUUID()}${extension}`;
 }

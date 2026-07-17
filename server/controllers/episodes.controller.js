@@ -29,7 +29,7 @@ export async function createNovelWithUpload({ writerId, writerSlug, title, summa
         writerSlug,
         novelSlug,
         episodeNumber,
-        originalName: file.originalName
+        originalName: file.originalname // multer uses lowercase 'n'
       });
       const saved = await storageService.uploadFile(file.buffer, destPath, 'application/pdf');
 
@@ -46,7 +46,7 @@ export async function createNovelWithUpload({ writerId, writerSlug, title, summa
         writerSlug,
         novelSlug,
         episodeNumber: 1,
-        originalName: file.originalName
+        originalName: file.originalname // multer uses lowercase 'n'
       });
       const saved = await storageService.uploadFile(file.buffer, destPath, 'application/pdf');
 
@@ -95,7 +95,7 @@ export async function addEpisodeToNovel({ novelId, writerId, writerSlug, file, e
     writerSlug: novel.writerSlug,
     novelSlug: novel.novelSlug,
     episodeNumber,
-    originalName: file.originalName
+    originalName: file.originalname // multer uses lowercase 'n'
   });
   const saved = await storageService.uploadFile(file.buffer, destPath, 'application/pdf');
 
