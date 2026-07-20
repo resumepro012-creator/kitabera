@@ -39,6 +39,16 @@ import tiktokIcon from './assets/tiktok.jfif';
 import watsappIcon from './assets/watsapp.jfif';
 import youtubeIcon from './assets/youtube.jfif';
 
+// Helper function to safely get filename from URL
+function getFilenameFromUrl(url) {
+  if (!url) return '';
+  try {
+    return url.split('/').pop() || '';
+  } catch {
+    return '';
+  }
+}
+
 const CATEGORY_OPTIONS = [
   { key: 'islamic', label: 'Islamic' },
   { key: 'romcom', label: 'Romcom' },
@@ -725,7 +735,7 @@ function DigestPage() {
                   By {novel.writer?.name || 'Unknown Writer'}
                 </div>
                 <div className="library-card__actions">
-                  <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button">
+                  <a href={`/api/download/${getFilenameFromUrl(novel.fileUrl)}`} className="primary-button">
                     Download
                   </a>
                 </div>
@@ -917,7 +927,7 @@ function NovelPage() {
     try {
       for (const ep of novel.episodes) {
         const link = document.createElement('a');
-        link.href = `/api/download/${ep.fileUrl.split('/').pop()}`;
+        link.href = `/api/download/${ep.getFilenameFromUrl(fileUrl)}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1024,7 +1034,7 @@ function NovelPage() {
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <a
-                        href={`/api/download/${ep.fileUrl.split('/').pop()}`}
+                        href={`/api/download/${ep.getFilenameFromUrl(fileUrl)}`}
                         className="primary-button"
                         style={{ minHeight: '2.25rem', padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
                       >
@@ -1285,7 +1295,7 @@ function ExplorePage() {
                           <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                             Writer page
                           </Link>
-                          <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                          <a href={`/api/download/${novel.getFilenameFromUrl(fileUrl)}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
                             Download
                           </a>
                         </div>
@@ -1379,7 +1389,7 @@ function ExplorePage() {
                         <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                           Writer page
                         </Link>
-                        <a href={`/api/download/${novel.fileUrl.split('/').pop()}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                        <a href={`/api/download/${novel.getFilenameFromUrl(fileUrl)}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
                           Download
                         </a>
                       </div>
@@ -1428,7 +1438,7 @@ function WriterPage() {
     try {
       for (const ep of activeNovel.episodes) {
         const link = document.createElement('a');
-        link.href = `/api/download/${ep.fileUrl.split('/').pop()}`;
+        link.href = `/api/download/${ep.getFilenameFromUrl(fileUrl)}`;
         link.setAttribute('download', `${activeNovel.title} - ${ep.title}.pdf`);
         document.body.appendChild(link);
         link.click();
@@ -1555,7 +1565,7 @@ function WriterPage() {
                           </button>
                         )}
                         <a
-                          href={`/api/download/${(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl).split('/').pop()}`}
+                          href={`/api/download/${getFilenameFromUrl(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl)}`}
                           className="primary-button"
                         >
                           Download {activeEpisode ? activeEpisode.title : 'PDF'}
@@ -1586,7 +1596,7 @@ function WriterPage() {
                     <div className="pdf-frame-wrap">
                       <iframe
                         title={activeEpisode ? `${activeNovel.title} - ${activeEpisode.title}` : activeNovel.title}
-                        src={`/api/view/${(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl).split('/').pop()}`}
+                        src={`/api/view/${getFilenameFromUrl(activeEpisode ? activeEpisode.fileUrl : activeNovel.fileUrl)}`}
                         className="pdf-frame"
                       />
                     </div>

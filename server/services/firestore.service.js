@@ -167,7 +167,14 @@ export async function listEpisodesByNovel(novelId) {
     .where('novelId', '==', novelId)
     .orderBy('episodeNumber', 'asc')
     .get();
-  return snapshot.docs.map(mapDoc);
+  return snapshot.docs.map(doc => {
+    const data = mapDoc(doc);
+    return {
+      ...data,
+      fileUrl: data.pdfUrl, // For frontend compatibility
+      filePath: data.pdfPath
+    };
+  });
 }
 
 /**

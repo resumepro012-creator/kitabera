@@ -140,7 +140,7 @@ const PdfReader = () => {
         </Link>
         {fileUrl && (
           <a 
-            href={`/api/download/${fileUrl.split('/').pop()}`} 
+            href={`/api/download/${(() => { if (!fileUrl) return ''; try { return fileUrl.split('/').pop() || ''; } catch { return ''; } })()}`} 
             className="primary-button"
             style={{ fontSize: '0.9rem' }}
           >
