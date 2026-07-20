@@ -294,41 +294,40 @@ function extractFilename(pathOrUrl) {
 }
 
 export async function findFileByFilename(filename) {
-  // Search novels
-  const novels = await listNovels();
-  for (const novel of novels) {
-    const filePath = novel.filePath || '';
-    const fileUrl = novel.fileUrl || '';
+  // Search novels for filePath or fileUrl matching filename
+  const novelsSnapshot = await db().collection('novels').get();
+  for (const doc of novelsSnapshot.docs) {
+    const data = mapDoc(doc);
+    const filePath = data.filePath || '';
+    const fileUrl = data.fileUrl || '';
     const fileNameFromPath = extractFilename(filePath);
     const fileNameFromUrl = extractFilename(fileUrl);
     if (fileNameFromPath === filename || fileNameFromUrl === filename) {
       return { 
         type: 'novel', 
-        path: filePath || '', 
-        url: fileUrl || '', 
-        originalFilename: novel.originalFilename,
-        title: novel.title
+        path: filePath, 
+        url: fileUrl, 
+        originalFilename: data.originalFilename,
+        title: data.title
       };
     }
   }
-  // Search episodes
-  const allNovels = await listNovels();
-  for (const novel of allNovels) {
-    const episodes = await listEpisodesByNovel(novel.id);
-    for (const episode of episodes) {
-      const pdfPath = episode.pdfPath || episode.filePath || '';
-      const pdfUrl = episode.pdfUrl || episode.fileUrl || '';
-      const fileNameFromPath = extractFilename(pdfPath);
-      const fileNameFromUrl = extractFilename(pdfUrl);
-      if (fileNameFromPath === filename || fileNameFromUrl === filename) {
-        return { 
-          type: 'episode', 
-          path: pdfPath, 
-          url: pdfUrl, 
-          originalFilename: episode.originalFilename,
-          title: episode.title
-        };
-      }
+  // Search episodes for pdfPath or pdfUrl matching filename
+  const episodesSnapshot = await db().collection('episodes').get();
+  for (const doc of episodesSnapshot.docs) {
+    const data = mapDoc(doc);
+    const pdfPath = data.pdfPath || '';
+    const pdfUrl = data.pdfUrl || '';
+    const fileNameFromPath = extractFilename(pdfPath);
+    const fileNameFromUrl = extractFilename(pdfUrl);
+    if (fileNameFromPath === filename || fileNameFromUrl === filename) {
+      return { 
+        type: 'episode', 
+        path: pdfPath, 
+        url: pdfUrl, 
+        originalFilename: data.originalFilename,
+        title: data.title
+      };
     }
   }
   return null;
