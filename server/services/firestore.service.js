@@ -281,7 +281,8 @@ export async function findFileByFilename(filename) {
         type: 'novel', 
         path: data.filePath, 
         url: data.fileUrl, 
-        originalFilename: data.originalFilename 
+        originalFilename: data.originalFilename,
+        title: data.title
       };
     }
   }
@@ -294,7 +295,8 @@ export async function findFileByFilename(filename) {
         type: 'episode', 
         path: data.pdfPath, 
         url: data.pdfUrl, 
-        originalFilename: data.originalFilename 
+        originalFilename: data.originalFilename,
+        title: data.title
       };
     }
   }

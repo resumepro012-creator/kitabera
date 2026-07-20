@@ -40,7 +40,18 @@ app.get('/api/download/:filename', async (req, res, next) => {
     const arrayBuffer = await fileData.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     
-    const downloadFilename = fileInfo.originalFilename || filename;
+    let downloadFilename = fileInfo.originalFilename;
+    if (!downloadFilename) {
+      if (fileInfo.title) {
+        // Use the title and add .pdf extension if missing
+        downloadFilename = fileInfo.title.trim();
+        if (!downloadFilename.toLowerCase().endsWith('.pdf')) {
+          downloadFilename += '.pdf';
+        }
+      } else {
+        downloadFilename = filename;
+      }
+    }
     
     // Set headers for download
     res.setHeader('Content-Type', 'application/pdf');

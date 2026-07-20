@@ -122,10 +122,14 @@ export async function getAdminLibrary(req, res, next) {
         const novels = await firestoreService.listNovelsByWriter(writer.id);
         const novelsWithDetails = await Promise.all(
           novels.map(async (novel) => {
-            const reviews = await firestoreService.listReviewsByNovel(novel.id);
+            const [reviews, episodes] = await Promise.all([
+              firestoreService.listReviewsByNovel(novel.id),
+              firestoreService.listEpisodesByNovel(novel.id)
+            ]);
             return {
               ...publicNovel(novel),
               reviews,
+              episodes,
               averageRating: novel.averageRating || 0
             };
           })
