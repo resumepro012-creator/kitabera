@@ -30,8 +30,11 @@ app.use('/api', reviewsRoutes);
 app.get('/api/download/:filename', async (req, res, next) => {
   try {
     const filename = req.params.filename;
+    console.log(`Download request for filename:', filename);
     const fileInfo = await firestoreService.findFileByFilename(filename);
+    console.log('findFileByFilename result:', fileInfo);
     if (!fileInfo?.path) {
+      console.error('File path not found in fileInfo:', fileInfo);
       res.status(404).json({ message: 'File not found.' });
       return;
     }
@@ -67,8 +70,11 @@ app.get('/api/download/:filename', async (req, res, next) => {
 app.get('/api/view/:filename', async (req, res, next) => {
   try {
     const filename = req.params.filename;
+    console.log(`View request for filename:`, filename);
     const fileInfo = await firestoreService.findFileByFilename(filename);
+    console.log('findFileByFilename result for view:', fileInfo);
     if (!fileInfo?.path) {
+      console.error('File path not found in fileInfo for view:', fileInfo);
       res.status(404).json({ message: 'File not found.' });
       return;
     }

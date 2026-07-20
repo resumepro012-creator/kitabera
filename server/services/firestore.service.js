@@ -206,9 +206,10 @@ export async function createEpisode({ novelId, title, episodeNumber, pdfUrl, pdf
 
     const currentCount = novelDoc.data().episodeCount || 0;
     const updates = { episodeCount: currentCount + 1, updatedAt: FieldValue.serverTimestamp() };
-    // Keep a quick-open URL on the novel pointing at its first episode.
+    // Keep a quick-open URL and path on the novel pointing at its first episode.
     if (currentCount === 0) {
       updates.fileUrl = pdfUrl;
+      updates.filePath = pdfPath;
     }
     transaction.update(novelRef, updates);
   });
@@ -278,33 +279,56 @@ export async function deleteReviewsByNovel(novelId) {
   await batch.commit();
 }
 
+// Helper function to extract the filename from a path or URL
+function extractFilename(pathOrUrl) {
+  if (!pathOrUrl) return '';
+  try {
+    // First, try to parse as URL to handle Supabase public URLs
+    const url = new URL(pathOrUrl);
+    const pathname = url.pathname;
+    return pathname.split('/').pop() || '';
+  } catch {
+    // If not a valid URL, treat as a path
+    return pathOrUrl.split('/').pop() || '';
+  }
+}
+
 export async function findFileByFilename(filename) {
-  // Search novels for filePath or fileUrl ending with filename
-  const novelsSnapshot = await db().collection('novels').get();
-  for (const doc of novelsSnapshot.docs) {
-    const data = doc.data();
-    if (data.filePath?.endsWith(filename) || data.fileUrl?.endsWith(filename)) {
+  // Search novels
+  const novels = await listNovels();
+  for (const novel of novels) {
+    const filePath = novel.filePath || '';
+    const fileUrl = novel.fileUrl || '';
+    const fileNameFromPath = extractFilename(filePath);
+    const fileNameFromUrl = extractFilename(fileUrl);
+    if (fileNameFromPath === filename || fileNameFromUrl === filename) {
       return { 
         type: 'novel', 
-        path: data.filePath, 
-        url: data.fileUrl, 
-        originalFilename: data.originalFilename,
-        title: data.title
+        path: filePath || '', 
+        url: fileUrl || '', 
+        originalFilename: novel.originalFilename,
+        title: novel.title
       };
     }
   }
-  // Search episodes for pdfPath or pdfUrl ending with filename
-  const episodesSnapshot = await db().collection('episodes').get();
-  for (const doc of episodesSnapshot.docs) {
-    const data = doc.data();
-    if (data.pdfPath?.endsWith(filename) || data.pdfUrl?.endsWith(filename)) {
-      return { 
-        type: 'episode', 
-        path: data.pdfPath, 
-        url: data.pdfUrl, 
-        originalFilename: data.originalFilename,
-        title: data.title
-      };
+  // Search episodes
+  const allNovels = await listNovels();
+  for (const novel of allNovels) {
+    const episodes = await listEpisodesByNovel(novel.id);
+    for (const episode of episodes) {
+      const pdfPath = episode.pdfPath || episode.filePath || '';
+      const pdfUrl = episode.pdfUrl || episode.fileUrl || '';
+      const fileNameFromPath = extractFilename(pdfPath);
+      const fileNameFromUrl = extractFilename(pdfUrl);
+      if (fileNameFromPath === filename || fileNameFromUrl === filename) {
+        return { 
+          type: 'episode', 
+          path: pdfPath, 
+          url: pdfUrl, 
+          originalFilename: episode.originalFilename,
+          title: episode.title
+        };
+      }
     }
   }
   return null;
