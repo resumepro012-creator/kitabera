@@ -92,7 +92,7 @@ export async function getNovelById(novelId) {
   return doc.exists ? mapDoc(doc) : null;
 }
 
-export async function createNovel({ writerId, writerSlug, title, novelSlug, summary, category, subcategory, status = 'ongoing', coverUrl = '', coverPath = '' }) {
+export async function createNovel({ writerId, writerSlug, title, novelSlug, summary, category, subcategory, status = 'ongoing', coverUrl = '', coverPath = '', originalFilename = '' }) {
   const id = `novel_${randomUUID()}`;
   const data = {
     writerId,
@@ -112,6 +112,7 @@ export async function createNovel({ writerId, writerSlug, title, novelSlug, summ
     reviewCount: 0,
     coverUrl,
     coverPath,
+    originalFilename,
     createdAt: FieldValue.serverTimestamp()
   };
 
@@ -173,7 +174,7 @@ export async function listEpisodesByNovel(novelId) {
  * Creates an episode and atomically keeps the parent novel's denormalized
  * episodeCount / fileUrl in sync — safe even if two uploads happen at once.
  */
-export async function createEpisode({ novelId, title, episodeNumber, pdfUrl, pdfPath }) {
+export async function createEpisode({ novelId, title, episodeNumber, pdfUrl, pdfPath, originalFilename = '' }) {
   const id = `episode_${randomUUID()}`;
   const episode = {
     novelId,
@@ -181,6 +182,7 @@ export async function createEpisode({ novelId, title, episodeNumber, pdfUrl, pdf
     episodeNumber,
     pdfUrl,
     pdfPath,
+    originalFilename,
     createdAt: FieldValue.serverTimestamp()
   };
 
@@ -275,7 +277,12 @@ export async function findFileByFilename(filename) {
   for (const doc of novelsSnapshot.docs) {
     const data = doc.data();
     if (data.filePath?.endsWith(filename) || data.fileUrl?.endsWith(filename)) {
-      return { type: 'novel', path: data.filePath, url: data.fileUrl };
+      return { 
+        type: 'novel', 
+        path: data.filePath, 
+        url: data.fileUrl, 
+        originalFilename: data.originalFilename 
+      };
     }
   }
   // Search episodes for pdfPath or pdfUrl ending with filename
@@ -283,7 +290,12 @@ export async function findFileByFilename(filename) {
   for (const doc of episodesSnapshot.docs) {
     const data = doc.data();
     if (data.pdfPath?.endsWith(filename) || data.pdfUrl?.endsWith(filename)) {
-      return { type: 'episode', path: data.pdfPath, url: data.pdfUrl };
+      return { 
+        type: 'episode', 
+        path: data.pdfPath, 
+        url: data.pdfUrl, 
+        originalFilename: data.originalFilename 
+      };
     }
   }
   return null;

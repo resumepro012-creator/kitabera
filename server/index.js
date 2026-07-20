@@ -9,6 +9,7 @@ import writersRoutes from './routes/writers.routes.js';
 import novelsRoutes from './routes/novels.routes.js';
 import reviewsRoutes from './routes/reviews.routes.js';
 import * as firestoreService from './services/firestore.service.js';
+import * as storageService from './services/storage.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,12 +31,23 @@ app.get('/api/download/:filename', async (req, res, next) => {
   try {
     const filename = req.params.filename;
     const fileInfo = await firestoreService.findFileByFilename(filename);
-    if (!fileInfo?.url) {
+    if (!fileInfo?.path) {
       res.status(404).json({ message: 'File not found.' });
       return;
     }
-    // Redirect to Supabase public URL for download
-    res.redirect(fileInfo.url);
+    
+    const fileData = await storageService.downloadFile(fileInfo.path);
+    const arrayBuffer = await fileData.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    const downloadFilename = fileInfo.originalFilename || filename;
+    
+    // Set headers for download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
+    res.setHeader('Content-Length', buffer.length);
+    
+    res.send(buffer);
   } catch (error) {
     next(error);
   }
@@ -45,12 +57,23 @@ app.get('/api/view/:filename', async (req, res, next) => {
   try {
     const filename = req.params.filename;
     const fileInfo = await firestoreService.findFileByFilename(filename);
-    if (!fileInfo?.url) {
+    if (!fileInfo?.path) {
       res.status(404).json({ message: 'File not found.' });
       return;
     }
-    // Redirect to Supabase public URL for viewing
-    res.redirect(fileInfo.url);
+    
+    const fileData = await storageService.downloadFile(fileInfo.path);
+    const arrayBuffer = await fileData.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    const downloadFilename = fileInfo.originalFilename || filename;
+    
+    // Set headers for viewing
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${downloadFilename}"`);
+    res.setHeader('Content-Length', buffer.length);
+    
+    res.send(buffer);
   } catch (error) {
     next(error);
   }

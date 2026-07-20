@@ -7,6 +7,7 @@ import { novelSlugFromTitle } from '../utils/helpers.js';
  */
 export async function createNovelWithUpload({ writerId, writerSlug, title, summary, category, subcategory, file, episodeTitle }) {
   const novelSlug = novelSlugFromTitle(title);
+  const originalFilename = file ? file.originalname : '';
 
   // Create novel in Firestore
   const novel = await firestoreService.createNovel({
@@ -17,7 +18,8 @@ export async function createNovelWithUpload({ writerId, writerSlug, title, summa
     summary,
     category,
     subcategory,
-    status: 'ongoing'
+    status: 'ongoing',
+    originalFilename
   });
 
   // If we have a file, upload it as either single file or first episode
@@ -38,7 +40,8 @@ export async function createNovelWithUpload({ writerId, writerSlug, title, summa
         title: episodeTitle || 'Episode 1',
         episodeNumber,
         pdfUrl: saved.url,
-        pdfPath: saved.path
+        pdfPath: saved.path,
+        originalFilename
       });
     } else {
       // Upload as single file (e.g., complete novel, poetry, etc.)
@@ -91,6 +94,7 @@ export async function addEpisodeToNovel({ novelId, writerId, writerSlug, file, e
   }
 
   const episodeNumber = (novel.episodeCount || 0) + 1;
+  const originalFilename = file.originalname;
   const destPath = storageService.buildPdfPath({
     writerSlug: novel.writerSlug,
     novelSlug: novel.novelSlug,
@@ -104,7 +108,8 @@ export async function addEpisodeToNovel({ novelId, writerId, writerSlug, file, e
     title: episodeTitle || `Episode ${episodeNumber}`,
     episodeNumber,
     pdfUrl: saved.url,
-    pdfPath: saved.path
+    pdfPath: saved.path,
+    originalFilename
   });
 
   const updatedNovel = await firestoreService.getNovelById(novelId);

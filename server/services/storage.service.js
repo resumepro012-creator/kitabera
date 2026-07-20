@@ -134,6 +134,19 @@ export async function deleteFolder(prefix) {
   }
 }
 
+export async function downloadFile(filePath) {
+  const { client, bucket: supabaseBucket } = getSupabaseClient();
+  const { data, error } = await client.storage
+    .from(supabaseBucket)
+    .download(filePath);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 export function buildPdfPath({ writerSlug, novelSlug, episodeNumber, originalName, originalname }) {
   const extension = path.extname(originalName || originalname || '') || '.pdf';
   return `pdfs/${writerSlug}/${novelSlug}/${episodeNumber}-${randomUUID()}${extension}`;
