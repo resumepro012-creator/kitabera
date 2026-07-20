@@ -1034,7 +1034,7 @@ function NovelPage() {
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                       <a
-                        href={`/api/download/${ep.getFilenameFromUrl(fileUrl)}`}
+                        href={`/api/download/${getFilenameFromUrl(ep.fileUrl)}`}
                         className="primary-button"
                         style={{ minHeight: '2.25rem', padding: '0.4rem 0.85rem', fontSize: '0.85rem' }}
                       >
@@ -1295,7 +1295,7 @@ function ExplorePage() {
                           <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                             Writer page
                           </Link>
-                          <a href={`/api/download/${novel.getFilenameFromUrl(fileUrl)}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                          <a href={`/api/download/${getFilenameFromUrl(novel.fileUrl)}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
                             Download
                           </a>
                         </div>
