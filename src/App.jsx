@@ -1106,7 +1106,7 @@ function FolderCard({ novel }) {
           </span>
           <span style={{ fontSize: '0.8rem', color: 'var(--plum-500)' }}>•</span>
           <span style={{ fontSize: '0.8rem', color: 'var(--plum-700)' }}>
-            {novel.episodes?.length || 0} episodes
+            {novel.episodeCount || 0} episodes
           </span>
           <span style={{ fontSize: '0.8rem', color: 'var(--plum-500)' }}>•</span>
           <span style={{ fontSize: '0.8rem', color: 'var(--plum-700)' }}>
