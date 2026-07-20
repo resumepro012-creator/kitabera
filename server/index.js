@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes.js';
 import writersRoutes from './routes/writers.routes.js';
 import novelsRoutes from './routes/novels.routes.js';
 import reviewsRoutes from './routes/reviews.routes.js';
+import * as firestoreService from './services/firestore.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,6 +24,37 @@ app.use('/api', authRoutes);
 app.use('/api', writersRoutes);
 app.use('/api', novelsRoutes);
 app.use('/api', reviewsRoutes);
+
+// Download & View Routes
+app.get('/api/download/:filename', async (req, res, next) => {
+  try {
+    const filename = req.params.filename;
+    const fileInfo = await firestoreService.findFileByFilename(filename);
+    if (!fileInfo?.url) {
+      res.status(404).json({ message: 'File not found.' });
+      return;
+    }
+    // Redirect to Supabase public URL for download
+    res.redirect(fileInfo.url);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/view/:filename', async (req, res, next) => {
+  try {
+    const filename = req.params.filename;
+    const fileInfo = await firestoreService.findFileByFilename(filename);
+    if (!fileInfo?.url) {
+      res.status(404).json({ message: 'File not found.' });
+      return;
+    }
+    // Redirect to Supabase public URL for viewing
+    res.redirect(fileInfo.url);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Serve static files from dist
 app.use(express.static(path.join(__dirname, '..', 'dist'), { maxAge: '1d' }));

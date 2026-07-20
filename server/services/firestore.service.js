@@ -269,6 +269,26 @@ export async function deleteReviewsByNovel(novelId) {
   await batch.commit();
 }
 
+export async function findFileByFilename(filename) {
+  // Search novels for filePath or fileUrl ending with filename
+  const novelsSnapshot = await db().collection('novels').get();
+  for (const doc of novelsSnapshot.docs) {
+    const data = doc.data();
+    if (data.filePath?.endsWith(filename) || data.fileUrl?.endsWith(filename)) {
+      return { type: 'novel', path: data.filePath, url: data.fileUrl };
+    }
+  }
+  // Search episodes for pdfPath or pdfUrl ending with filename
+  const episodesSnapshot = await db().collection('episodes').get();
+  for (const doc of episodesSnapshot.docs) {
+    const data = doc.data();
+    if (data.pdfPath?.endsWith(filename) || data.pdfUrl?.endsWith(filename)) {
+      return { type: 'episode', path: data.pdfPath, url: data.pdfUrl };
+    }
+  }
+  return null;
+}
+
 export { normalizeTimestamp };
 
 // ALIASES for backward compatibility with existing controllers:
