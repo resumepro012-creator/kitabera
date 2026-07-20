@@ -927,7 +927,7 @@ function NovelPage() {
     try {
       for (const ep of novel.episodes) {
         const link = document.createElement('a');
-        link.href = `/api/download/${ep.getFilenameFromUrl(fileUrl)}`;
+        link.href = `/api/download/${getFilenameFromUrl(ep.fileUrl)}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1438,7 +1438,7 @@ function WriterPage() {
     try {
       for (const ep of activeNovel.episodes) {
         const link = document.createElement('a');
-        link.href = `/api/download/${ep.getFilenameFromUrl(fileUrl)}`;
+        link.href = `/api/download/${getFilenameFromUrl(ep.fileUrl)}`;
         link.setAttribute('download', `${activeNovel.title} - ${ep.title}.pdf`);
         document.body.appendChild(link);
         link.click();
