@@ -1389,7 +1389,7 @@ function ExplorePage() {
                         <Link to={`/writer/${novel.writer?.slug}`} state={{ activeNovelId: novel.id }} className="secondary-button" style={{ flex: 1, justifyContent: 'center' }}>
                           Writer page
                         </Link>
-                        <a href={`/api/download/${novel.getFilenameFromUrl(fileUrl)}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
+                        <a href={`/api/download/${getFilenameFromUrl(novel.fileUrl)}`} className="primary-button" style={{ flex: 1, justifyContent: 'center' }}>
                           Download
                         </a>
                       </div>
