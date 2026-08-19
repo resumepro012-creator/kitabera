@@ -1,4 +1,4 @@
-const API_BASE = '';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 function buildUrl(path) {
   return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
