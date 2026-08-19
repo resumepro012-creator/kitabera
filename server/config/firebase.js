@@ -10,6 +10,13 @@ function readCredentials() {
   let privateKey = process.env.FIREBASE_PRIVATE_KEY;
   const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
 
+  // Diagnostic logs to pinpoint missing vars on Render
+  console.log('🔍 Firebase Credentials Check:');
+  console.log('   FIREBASE_PROJECT_ID:', projectId ? `✅ SET (${projectId})` : '❌ MISSING');
+  console.log('   FIREBASE_CLIENT_EMAIL:', clientEmail ? `✅ SET (${clientEmail})` : '❌ MISSING');
+  console.log('   FIREBASE_PRIVATE_KEY:', privateKey ? `✅ SET (length: ${privateKey.length})` : '❌ MISSING');
+  console.log('   FIREBASE_STORAGE_BUCKET:', storageBucket ? `✅ SET (${storageBucket})` : '❌ MISSING');
+
   // Strip surrounding quotes if present
   if (privateKey?.startsWith('"') && privateKey?.endsWith('"')) {
     privateKey = privateKey.slice(1, -1);

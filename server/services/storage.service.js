@@ -13,6 +13,12 @@ function getSupabaseClient() {
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supabaseBucket = process.env.SUPABASE_BUCKET;
 
+  // Diagnostic logs to pinpoint missing vars on Render
+  console.log('🔍 Supabase Credentials Check:');
+  console.log('   SUPABASE_URL:', supabaseUrl ? `✅ SET (${supabaseUrl})` : '❌ MISSING');
+  console.log('   SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceRoleKey ? `✅ SET (length: ${supabaseServiceRoleKey.length})` : '❌ MISSING');
+  console.log('   SUPABASE_BUCKET:', supabaseBucket ? `✅ SET (${supabaseBucket})` : '❌ MISSING');
+
   if (!supabaseUrl || !supabaseServiceRoleKey || !supabaseBucket) {
     throw new Error(
       'Supabase is not configured. Set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and SUPABASE_BUCKET in your .env file.'
