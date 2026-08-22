@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import * as pdfjsLib from 'pdfjs-dist';
+import { apiAsset } from '../api';
 
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -18,7 +19,7 @@ const PdfReader = () => {
   const [error, setError] = useState('');
   const canvasRef = useRef(null);
 
-  const fileUrl = `/api/view/${id}`;
+  const fileUrl = apiAsset(`/api/view/${id}`);
 
   // Load PDF
   useEffect(() => {
@@ -140,7 +141,7 @@ const PdfReader = () => {
         </Link>
         {fileUrl && (
           <a 
-            href={`/api/download/${(() => { if (!fileUrl) return ''; try { return fileUrl.split('/').pop() || ''; } catch { return ''; } })()}`} 
+            href={apiAsset(`/api/download/${(() => { if (!id) return ''; try { return id || ''; } catch { return ''; } })()}`)} 
             className="primary-button"
             style={{ fontSize: '0.9rem' }}
           >
