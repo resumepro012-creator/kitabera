@@ -106,15 +106,13 @@ app.get('/api/download/:filename', async (req, res, next) => {
       console.error('File path not found:', fileInfo);
 
       return res.status(404).json({
+        success: false,
         message: 'File not found.',
       });
     }
 
-    const fileData =
-      await storageService.downloadFile(fileInfo.path);
-
-    const arrayBuffer = await fileData.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    // downloadFile now returns a Node Buffer directly
+    const buffer = await storageService.downloadFile(fileInfo.path);
 
     let downloadFilename = fileInfo.originalFilename;
 
@@ -139,10 +137,16 @@ app.get('/api/download/:filename', async (req, res, next) => {
 
     res.setHeader('Content-Length', buffer.length);
 
+    console.log(`Download sending ${buffer.length} bytes for "${downloadFilename}"`);
     return res.send(buffer);
   } catch (error) {
     console.error('Download error:', error);
-    next(error);
+    // If storage layer set status (like 404), honor it
+    const status = error.status || 500;
+    res.status(status).json({
+      success: false,
+      message: error.message || 'Failed to download file',
+    });
   }
 });
 
@@ -171,15 +175,13 @@ app.get('/api/view/:filename', async (req, res, next) => {
       );
 
       return res.status(404).json({
+        success: false,
         message: 'File not found.',
       });
     }
 
-    const fileData =
-      await storageService.downloadFile(fileInfo.path);
-
-    const arrayBuffer = await fileData.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    // downloadFile now returns a Node Buffer directly
+    const buffer = await storageService.downloadFile(fileInfo.path);
 
     const downloadFilename =
       fileInfo.originalFilename || filename;
@@ -193,10 +195,16 @@ app.get('/api/view/:filename', async (req, res, next) => {
 
     res.setHeader('Content-Length', buffer.length);
 
+    console.log(`View sending ${buffer.length} bytes for "${downloadFilename}"`);
     return res.send(buffer);
   } catch (error) {
     console.error('View PDF error:', error);
-    next(error);
+    // If storage layer set status (like 404), honor it
+    const status = error.status || 500;
+    res.status(status).json({
+      success: false,
+      message: error.message || 'Failed to load file',
+    });
   }
 });
 
@@ -208,6 +216,16 @@ app.use('/api', (_req, res) => {
   res.status(404).json({
     success: false,
     message: 'API route not found.',
+  });
+});
+
+// ===============================
+// Non-API 404 (silent - frontend routes like /admin are on Vercel)
+// ===============================
+app.use((_req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'KitabEra Backend API — Frontend is hosted on Vercel.',
   });
 });
 

@@ -47,20 +47,39 @@ function getSupabaseClient() {
  */
 export async function uploadFile(buffer, destPath, contentType) {
   const { client, bucket: supabaseBucket } = getSupabaseClient();
+  console.log(`[Storage] uploadFile START: bucket="${supabaseBucket}", path="${destPath}", contentType="${contentType}", buffer length=${Buffer.isBuffer(buffer) ? buffer.length : typeof buffer}`);
+
+  // Ensure we have a proper Buffer
+  if (!Buffer.isBuffer(buffer)) {
+    console.warn(`[Storage] uploadFile input is NOT a Buffer (${typeof buffer}), attempting conversion...`);
+    buffer = Buffer.from(buffer);
+  }
+
+  if (buffer.length === 0) {
+    console.error(`[Storage] uploadFile ERROR: Empty buffer provided for "${destPath}"`);
+    throw new Error('Empty file provided. Please upload a valid file.');
+  }
+
+  const finalContentType = contentType || (destPath?.toLowerCase()?.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream');
+  console.log(`[Storage] Supabase upload attempt: bucket="${supabaseBucket}", path="${destPath}", contentType="${finalContentType}", size=${buffer.length} bytes`);
+
   const { error } = await client.storage
     .from(supabaseBucket)
     .upload(destPath, buffer, {
-      contentType,
+      contentType: finalContentType,
       upsert: true
     });
 
   if (error) {
+    console.error(`[Storage] Supabase upload FAILED for "${destPath}":`, error);
     throw error;
   }
 
   const { data: { publicUrl } } = client.storage
     .from(supabaseBucket)
     .getPublicUrl(destPath);
+
+  console.log(`[Storage] uploadFile SUCCESS: publicUrl="${publicUrl}", path="${destPath}"`);
 
   return {
     url: publicUrl,
@@ -142,15 +161,81 @@ export async function deleteFolder(prefix) {
 
 export async function downloadFile(filePath) {
   const { client, bucket: supabaseBucket } = getSupabaseClient();
+  console.log(`[Storage] downloadFile requested for path: "${filePath}"`);
+
+  // Handle old Railway/legacy paths (e.g. "/uploads/novels/123-uuid.pdf")
+  // These files don't exist in Supabase since they were local filesystem only
+  const isLegacyUploadsPath = filePath && (
+    filePath.startsWith('/uploads/') || 
+    filePath.startsWith('uploads/')
+  );
+  if (isLegacyUploadsPath) {
+    console.warn(`[Storage] Legacy Railway local path detected: "${filePath}". File not in Supabase (migrated from Railway local storage).`);
+    const err = new Error('File not found. This file was uploaded on the old system and is no longer available. Please re-upload.');
+    err.status = 404;
+    throw err;
+  }
+
+  // If path is actually a public URL (https://...), extract object path inside bucket
+  let finalPath = filePath;
+  if (typeof filePath === 'string' && filePath.startsWith('http')) {
+    try {
+      const url = new URL(filePath);
+      // Typical Supabase public URL: /storage/v1/object/public/{bucket}/{path}
+      const match = url.pathname.match(/\/storage\/v1\/object\/public\/[^/]+\/(.+)$/);
+      if (match) {
+        finalPath = decodeURIComponent(match[1]);
+        console.log(`[Storage] Extracted bucket path from public URL: "${finalPath}"`);
+      } else {
+        finalPath = url.pathname.split('/').pop(); // fallback to filename
+        console.log(`[Storage] Could not parse Supabase URL, using filename fallback: "${finalPath}"`);
+      }
+    } catch {
+      // ignore, keep filePath as-is
+    }
+  }
+
+  console.log(`[Storage] Supabase download attempt: bucket="${supabaseBucket}", path="${finalPath}"`);
   const { data, error } = await client.storage
     .from(supabaseBucket)
-    .download(filePath);
+    .download(finalPath);
 
   if (error) {
+    console.error(`[Storage] Supabase download FAILED for "${finalPath}":`, error);
+    // If file not found, set status to 404
+    if (error.statusCode === 404 || (error.message && (error.message.includes('not found') || error.message.includes('does not exist')))) {
+      const notFoundErr = new Error(`File not found in storage: "${finalPath}"`);
+      notFoundErr.status = 404;
+      throw notFoundErr;
+    }
     throw error;
   }
 
-  return data;
+  // Supabase download returns either Node Buffer (server-side) or Blob (browser)
+  // Node Buffer has .buffer (ArrayBuffer) + length, Blob has .arrayBuffer() method
+  console.log(`[Storage] Download OK for "${finalPath}". Raw data type: ${data?.constructor?.name}, has .arrayBuffer: ${typeof data?.arrayBuffer === 'function'}, is Buffer: ${Buffer.isBuffer(data)}`);
+
+  let buffer;
+  if (Buffer.isBuffer(data)) {
+    buffer = data;
+    console.log(`[Storage] Received Node.js Buffer, length=${buffer.length}`);
+  } else if (data && typeof data.arrayBuffer === 'function') {
+    // Blob / File (browser-style)
+    const arrayBuffer = await data.arrayBuffer();
+    buffer = Buffer.from(arrayBuffer);
+    console.log(`[Storage] Received Blob, converted to Buffer length=${buffer.length}`);
+  } else if (data && data instanceof ArrayBuffer) {
+    buffer = Buffer.from(data);
+  } else if (data) {
+    // Last-ditch attempt
+    buffer = Buffer.isBuffer(data) ? data : Buffer.from(data);
+  } else {
+    throw new Error('No data returned from storage download');
+  }
+
+  // Attach buffer (for old API consumers) + also expose length via new property
+  buffer._storageBuffer = true;
+  return buffer;
 }
 
 export function buildPdfPath({ writerSlug, novelSlug, episodeNumber, originalName, originalname }) {
