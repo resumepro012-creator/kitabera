@@ -40,6 +40,45 @@ app.get('/health', (_req, res) => {
 });
 
 // ===============================
+// Debug Env Vars (Temporary - for Render diagnosis)
+// ===============================
+app.get('/debug-env', (_req, res) => {
+  function mask(value, showLength = true) {
+    if (!value) return '❌ MISSING';
+    if (showLength) return `✅ SET (length=${value.length})`;
+    return `✅ SET (length=${value.length})`;
+  }
+  const hasFirebasePrivateKey = !!process.env.FIREBASE_PRIVATE_KEY;
+  // Check if private key has valid format markers
+  let privateKeyFormat = 'OK';
+  if (hasFirebasePrivateKey) {
+    if (!process.env.FIREBASE_PRIVATE_KEY.includes('BEGIN PRIVATE KEY')) {
+      privateKeyFormat = '❌ Missing BEGIN marker';
+    } else if (!process.env.FIREBASE_PRIVATE_KEY.includes('END PRIVATE KEY')) {
+      privateKeyFormat = '❌ Missing END marker';
+    } else if (!process.env.FIREBASE_PRIVATE_KEY.includes('\\n') && !process.env.FIREBASE_PRIVATE_KEY.includes('\n')) {
+      privateKeyFormat = '⚠️ No newlines detected - may be malformed';
+    }
+  }
+  res.status(200).json({
+    success: true,
+    env: {
+      PORT: process.env.PORT || '❌ MISSING',
+      ADMIN_USERNAME: process.env.ADMIN_USERNAME ? `✅ SET (${process.env.ADMIN_USERNAME})` : '❌ MISSING',
+      ADMIN_PASSWORD: mask(process.env.ADMIN_PASSWORD),
+      JWT_SECRET: mask(process.env.JWT_SECRET),
+      FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID ? `✅ SET (${process.env.FIREBASE_PROJECT_ID})` : '❌ MISSING',
+      FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL ? `✅ SET (${process.env.FIREBASE_CLIENT_EMAIL})` : '❌ MISSING',
+      FIREBASE_PRIVATE_KEY: hasFirebasePrivateKey ? `✅ SET (length=${process.env.FIREBASE_PRIVATE_KEY.length}, format=${privateKeyFormat})` : '❌ MISSING',
+      FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET ? `✅ SET (${process.env.FIREBASE_STORAGE_BUCKET})` : '❌ MISSING',
+      SUPABASE_URL: process.env.SUPABASE_URL ? `✅ SET (${process.env.SUPABASE_URL})` : '❌ MISSING',
+      SUPABASE_SERVICE_ROLE_KEY: mask(process.env.SUPABASE_SERVICE_ROLE_KEY),
+      SUPABASE_BUCKET: process.env.SUPABASE_BUCKET ? `✅ SET (${process.env.SUPABASE_BUCKET})` : '❌ MISSING',
+    },
+  });
+});
+
+// ===============================
 // API Routes
 // ===============================
 
