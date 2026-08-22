@@ -13,6 +13,23 @@ import * as storageService from './services/storage.service.js';
 const app = express();
 const PORT = Number(process.env.PORT || 4000);
 
+function sanitizeFilename(name) {
+  if (!name) return '';
+  let clean = String(name).trim();
+  clean = clean.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_');
+  clean = clean.replace(/\s+/g, ' ');
+  clean = clean.replace(/^\.+|\.+$/g, '');
+  return clean || 'unnamed';
+}
+
+function buildContentDisposition(dispositionType, filename) {
+  const safeName = sanitizeFilename(filename);
+  const asciiFallback = safeName.replace(/[^\x20-\x7E]/g, '_');
+  const encodedUtf8 = encodeURIComponent(safeName)
+    .replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+  return `${dispositionType}; filename="${asciiFallback}"; filename*=UTF-8''${encodedUtf8}`;
+}
+
 // ===============================
 // Middleware
 // ===============================
@@ -114,29 +131,16 @@ app.get('/api/download/:filename', async (req, res, next) => {
     // downloadFile now returns a Node Buffer directly
     const buffer = await storageService.downloadFile(fileInfo.path);
 
-    let downloadFilename = fileInfo.originalFilename;
-
-    if (!downloadFilename) {
-      if (fileInfo.title) {
-        downloadFilename = fileInfo.title.trim();
-
-        if (!downloadFilename.toLowerCase().endsWith('.pdf')) {
-          downloadFilename += '.pdf';
-        }
-      } else {
-        downloadFilename = filename;
+    let downloadFilename;
+    if (fileInfo.title) {
+      downloadFilename = fileInfo.title.trim();
+      if (!downloadFilename.toLowerCase().endsWith('.pdf')) {
+        downloadFilename += '.pdf';
       }
-    }
-
-    // Properly encode filename for HTTP headers (RFC 5987 / RFC 6266)
-    // This handles Unicode characters (Urdu, Arabic, etc.) correctly instead of showing garbage
-    function buildContentDisposition(dispositionType, filename) {
-      // Fallback (ASCII-safe): strip non-ASCII chars for old browsers
-      const asciiFallback = filename.replace(/[^\x20-\x7E]/g, '_');
-      // RFC 5987: filename*=UTF-8''<percent-encoded> (modern browsers)
-      const encodedUtf8 = encodeURIComponent(filename)
-        .replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
-      return `${dispositionType}; filename="${asciiFallback}"; filename*=UTF-8''${encodedUtf8}`;
+    } else if (fileInfo.originalFilename) {
+      downloadFilename = fileInfo.originalFilename;
+    } else {
+      downloadFilename = filename;
     }
 
     res.setHeader('Content-Type', 'application/pdf');
@@ -194,29 +198,28 @@ app.get('/api/view/:filename', async (req, res, next) => {
     // downloadFile now returns a Node Buffer directly
     const buffer = await storageService.downloadFile(fileInfo.path);
 
-    const downloadFilename =
-      fileInfo.originalFilename || filename;
-
-    // Properly encode filename for HTTP headers (RFC 5987 / RFC 6266)
-    function buildContentDisposition(dispositionType, filename) {
-      // Fallback (ASCII-safe): strip non-ASCII chars for old browsers
-      const asciiFallback = filename.replace(/[^\x20-\x7E]/g, '_');
-      // RFC 5987: filename*=UTF-8''<percent-encoded> (modern browsers)
-      const encodedUtf8 = encodeURIComponent(filename)
-        .replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
-      return `${dispositionType}; filename="${asciiFallback}"; filename*=UTF-8''${encodedUtf8}`;
+    let viewFilename;
+    if (fileInfo.title) {
+      viewFilename = fileInfo.title.trim();
+      if (!viewFilename.toLowerCase().endsWith('.pdf')) {
+        viewFilename += '.pdf';
+      }
+    } else if (fileInfo.originalFilename) {
+      viewFilename = fileInfo.originalFilename;
+    } else {
+      viewFilename = filename;
     }
 
     res.setHeader('Content-Type', 'application/pdf');
 
     res.setHeader(
       'Content-Disposition',
-      buildContentDisposition('inline', downloadFilename)
+      buildContentDisposition('inline', viewFilename)
     );
 
     res.setHeader('Content-Length', buffer.length);
 
-    console.log(`View sending ${buffer.length} bytes for "${downloadFilename}"`);
+    console.log(`View sending ${buffer.length} bytes for "${viewFilename}"`);
     return res.send(buffer);
   } catch (error) {
     console.error('View PDF error:', error);
