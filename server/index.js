@@ -128,11 +128,22 @@ app.get('/api/download/:filename', async (req, res, next) => {
       }
     }
 
+    // Properly encode filename for HTTP headers (RFC 5987 / RFC 6266)
+    // This handles Unicode characters (Urdu, Arabic, etc.) correctly instead of showing garbage
+    function buildContentDisposition(dispositionType, filename) {
+      // Fallback (ASCII-safe): strip non-ASCII chars for old browsers
+      const asciiFallback = filename.replace(/[^\x20-\x7E]/g, '_');
+      // RFC 5987: filename*=UTF-8''<percent-encoded> (modern browsers)
+      const encodedUtf8 = encodeURIComponent(filename)
+        .replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+      return `${dispositionType}; filename="${asciiFallback}"; filename*=UTF-8''${encodedUtf8}`;
+    }
+
     res.setHeader('Content-Type', 'application/pdf');
 
     res.setHeader(
       'Content-Disposition',
-      `attachment; filename="${downloadFilename}"`
+      buildContentDisposition('attachment', downloadFilename)
     );
 
     res.setHeader('Content-Length', buffer.length);
@@ -186,11 +197,21 @@ app.get('/api/view/:filename', async (req, res, next) => {
     const downloadFilename =
       fileInfo.originalFilename || filename;
 
+    // Properly encode filename for HTTP headers (RFC 5987 / RFC 6266)
+    function buildContentDisposition(dispositionType, filename) {
+      // Fallback (ASCII-safe): strip non-ASCII chars for old browsers
+      const asciiFallback = filename.replace(/[^\x20-\x7E]/g, '_');
+      // RFC 5987: filename*=UTF-8''<percent-encoded> (modern browsers)
+      const encodedUtf8 = encodeURIComponent(filename)
+        .replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+      return `${dispositionType}; filename="${asciiFallback}"; filename*=UTF-8''${encodedUtf8}`;
+    }
+
     res.setHeader('Content-Type', 'application/pdf');
 
     res.setHeader(
       'Content-Disposition',
-      `inline; filename="${downloadFilename}"`
+      buildContentDisposition('inline', downloadFilename)
     );
 
     res.setHeader('Content-Length', buffer.length);
