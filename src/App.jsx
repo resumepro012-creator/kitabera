@@ -696,6 +696,9 @@ function PopularNovelsPage() {
                 <h3>{novel.title}</h3>
                 <p>{novel.summary}</p>
                 <StarRating rating={novel.averageRating} />
+                <div style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--plum-700)', fontWeight: '600' }}>
+                  Post views: {novel.views || 0} · Downloads: {novel.downloadCount || 0}
+                </div>
               </article>
             ))}
           </div>
@@ -1018,6 +1021,10 @@ function NovelPage() {
                 <span style={{ fontSize: '0.85rem', opacity: 0.75 }}>{novel.episodes?.length || 0} episodes</span>
                 <span style={{ opacity: 0.6 }}>·</span>
                 <span style={{ fontSize: '0.85rem', opacity: 0.75 }}>★ {(novel.averageRating || 0).toFixed(1)} ({novel.reviews?.length || 0} reviews)</span>
+                <span style={{ opacity: 0.6 }}>·</span>
+                <span style={{ fontSize: '0.85rem', opacity: 0.75 }}>👁 Post views: {novel.views || 0}</span>
+                <span style={{ opacity: 0.6 }}>·</span>
+                <span style={{ fontSize: '0.85rem', opacity: 0.75 }}>⬇ Downloads: {novel.downloadCount || 0}</span>
               </div>
 
               {novel.episodes?.length > 0 && (
@@ -1152,6 +1159,10 @@ function FolderCard({ novel }) {
           <span style={{ fontSize: '0.8rem', color: 'var(--plum-700)' }}>
             ★ {(novel.averageRating || 0).toFixed(1)} ({novel.reviews?.length || 0})
           </span>
+        </div>
+
+        <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'var(--plum-700)', fontWeight: '600' }}>
+          Post views: {novel.views || 0} · Downloads: {novel.downloadCount || 0}
         </div>
 
         <div style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--plum-800)', fontWeight: 'bold' }}>
@@ -1327,6 +1338,9 @@ function ExplorePage() {
                           ({novel.reviews?.length || 0} reviews)
                         </span>
                       </div>
+                      <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--plum-700)', fontWeight: '600' }}>
+                        Post views: {novel.views || 0} · Downloads: {novel.downloadCount || 0}
+                      </div>
                       <div style={{ marginBottom: '0.75rem', fontSize: '0.85rem', color: 'var(--plum-700)', fontWeight: '500' }}>
                         By {novel.writer?.name || 'Unknown Writer'}
                       </div>
@@ -1423,6 +1437,12 @@ function ExplorePage() {
                       <span style={{ marginLeft: '0.5rem', fontSize: '0.8rem', color: 'var(--plum-700)' }}>
                         ({novel.reviews?.length || 0} reviews)
                       </span>
+                    </div>
+                    <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--plum-700)', fontWeight: '600' }}>
+                      Post views: {novel.views || 0} · Downloads: {novel.downloadCount || 0}
+                    </div>
+                    <div style={{ marginBottom: '0.75rem', fontSize: '0.85rem', color: 'var(--plum-700)', fontWeight: '500' }}>
+                      By {novel.writer?.name || 'Unknown Writer'}
                     </div>
                     <div className="library-card__actions">
                       <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
@@ -1573,7 +1593,7 @@ function WriterPage() {
                     onClick={() => setActiveNovel(novel)}
                   >
                     <span>{novel.title}</span>
-                    <small>★ {(novel.averageRating || 0).toFixed(1)} ({novel.reviews?.length || 0} reviews)</small>
+                    <small>★ {(novel.averageRating || 0).toFixed(1)} ({novel.reviews?.length || 0} reviews) · 👁 {novel.views || 0} · ⬇ {novel.downloadCount || 0}</small>
                   </button>
                 ))}
               </aside>
@@ -1591,6 +1611,9 @@ function WriterPage() {
                           <span style={{ marginLeft: '0.5rem', color: 'var(--plum-700)' }}>
                             ({activeNovel.reviews?.length || 0} reviews)
                           </span>
+                        </div>
+                        <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--plum-700)', fontWeight: '600' }}>
+                          Post views: {activeNovel.views || 0} · Downloads: {activeNovel.downloadCount || 0}
                         </div>
                       </div>
                       <div className="reader-panel__actions">
