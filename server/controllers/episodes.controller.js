@@ -5,7 +5,7 @@ import { novelSlugFromTitle } from '../utils/helpers.js';
 /**
  * Creates a new novel and optionally uploads an initial file/episode
  */
-export async function createNovelWithUpload({ writerId, writerSlug, title, summary, category, subcategory, file, episodeTitle }) {
+export async function createNovelWithUpload({ writerId, writerSlug, title, summary, category, subcategory, file, episodeTitle, monthLabel = '' }) {
   const novelSlug = novelSlugFromTitle(title);
   const originalFilename = file ? file.originalname : '';
 
@@ -19,7 +19,8 @@ export async function createNovelWithUpload({ writerId, writerSlug, title, summa
     category,
     subcategory,
     status: 'ongoing',
-    originalFilename
+    originalFilename,
+    monthLabel
   });
 
   // If we have a file, upload it as either single file or first episode

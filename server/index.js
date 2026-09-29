@@ -128,6 +128,10 @@ app.get('/api/download/:filename', async (req, res, next) => {
       });
     }
 
+    if (fileInfo.novelId) {
+      await firestoreService.incrementNovelDownloads(fileInfo.novelId);
+    }
+
     // downloadFile now returns a Node Buffer directly
     const buffer = await storageService.downloadFile(fileInfo.path);
 
@@ -193,6 +197,10 @@ app.get('/api/view/:filename', async (req, res, next) => {
         success: false,
         message: 'File not found.',
       });
+    }
+
+    if (fileInfo.novelId) {
+      await firestoreService.incrementNovelViews(fileInfo.novelId);
     }
 
     // downloadFile now returns a Node Buffer directly

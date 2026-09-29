@@ -24,7 +24,7 @@ import adanCoFounder from './assets/adan co-founder.jpeg';
 import auraManager from './assets/aura manager.jpeg';
 import nimalVoiceArtist1 from './assets/Nimal voiceartist 1.jpeg';
 import munizaVoiceArtist2 from './assets/muniza voiceartist 2.jpeg';
-import ammarVoiceArtist3 from './assets/ammar voiceartist 3.jpeg';
+import ahmedBaigVoiceArtist from './assets/ammar voiceartist 3.jpeg';
 import sadiaEditor from './assets/sadia editor 1 reel editor.jpeg';
 import abubakarEditor from './assets/abubakar reel editor 2.jpeg';
 import qandeelEditor from './assets/qandeel editor.jpeg';
@@ -47,6 +47,37 @@ function getFilenameFromUrl(url) {
   } catch {
     return '';
   }
+}
+
+function formatMonthInput(value) {
+  if (!value) return '';
+  const [year, month] = String(value).split('-');
+  const parsedYear = Number(year);
+  const parsedMonth = Number(month);
+
+  if (!parsedYear || !parsedMonth) {
+    return '';
+  }
+
+  return new Date(parsedYear, parsedMonth - 1, 1).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+function getMagazineMonthLabel(item) {
+  if (item?.monthLabel) {
+    return item.monthLabel;
+  }
+
+  if (item?.createdAt) {
+    return new Date(item.createdAt).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
+  return 'Month not set';
 }
 
 const CATEGORY_OPTIONS = [
@@ -83,11 +114,12 @@ const SUBCATEGORY_OPTIONS = [
 
 const CATEGORY_WITHOUT_SUBCATEGORY = new Set(['poetry', 'articles', 'digest']);
 
-// "Digest" is a special upload category: admins can pick it when uploading a file,
+// "Magazine" uses the legacy `digest` category key so existing uploaded data and
+// backend validation continue working without a migration.
 // but it is intentionally left out of CATEGORY_OPTIONS so it never shows up as a
 // browsable genre on the public Explore page. It only surfaces on the dedicated
-// /digest page.
-const DIGEST_CATEGORY = { key: 'digest', label: 'Digest' };
+// /magazine page.
+const DIGEST_CATEGORY = { key: 'digest', label: 'Magazine' };
 const ADMIN_CATEGORY_OPTIONS = [...CATEGORY_OPTIONS, DIGEST_CATEGORY];
 
 const CATEGORY_LABEL_MAP = ADMIN_CATEGORY_OPTIONS.reduce((acc, category) => {
@@ -135,7 +167,7 @@ const teamSections = {
       name: 'Taiba ijaz',
       title: 'Founder & Voice Artist',
       bio: 'Shapes the reading experience, editorial direction, and long-term vision for Kitab Era.',
-      instagram: 'https://www.instagram.com/taibaijazwriter?igsh=NTFocDcydDU3ZnF5',
+      instagram: 'https://www.instagram.com/taibaijaz31?stkn=MXNpd3piMnlnMGgzbw==',
       image: taibaFounder
     },
     {
@@ -163,11 +195,11 @@ const teamSections = {
     },
 
     {
-      name: 'Ammar Ahmed',
+      name: 'Ahmed Baig',
       title: 'Voice Artist',
       bio: 'Specializes in expressive delivery for dialogue and dramatic scenes.',
-      instagram: 'https://www.instagram.com/iamasimplemuslim?igsh=eTFyc2R2bzY0bWtz',
-      image: ammarVoiceArtist3
+      instagram: 'https://www.instagram.com/ahmed_baigwrites?stkn=MTB0ZXQwcGpzN3lraQ==',
+      image: ahmedBaigVoiceArtist
     }
   ],
   editors: [
@@ -176,7 +208,7 @@ const teamSections = {
       name: 'Sadia',
       title: 'Editor',
       bio: 'Editor in kitab Era Team , edit reels and pick best of novels lines',
-      instagram: 'https://www.instagram.com/sadiawrites71?igsh=MXQ1bzl2azc1ZWg2cw==',
+      instagram: 'https://www.instagram.com/bookish._.nova?stkn=MWJqdHV6OWo4YzM3ag==',
       image: sadiaEditor
     },
     {
@@ -461,7 +493,7 @@ function AppShell({ children }) {
     <>
       <Link to="/explore" onClick={closeDrawer}>Explore</Link>
       <Link to="/admin/manage" onClick={closeDrawer}>Manage Uploads</Link>
-      <Link to="/admin/digest" onClick={closeDrawer}>Digest</Link>
+      <Link to="/admin/magazine" onClick={closeDrawer}>Magazine</Link>
       <span className="topbar__nav-divider" aria-hidden="true" />
       <button type="button" className="topbar__nav-logout" onClick={handleNavLogout}>
         Logout
@@ -474,7 +506,7 @@ function AppShell({ children }) {
       <Link to="/services" onClick={closeDrawer}>Services</Link>
       <Link to="/contact-us" onClick={closeDrawer}>Contact Us</Link>
       <Link to="/popular-novels" onClick={closeDrawer}>Popular Novels</Link>
-      <Link to="/digest" onClick={closeDrawer}>Digest</Link>
+      <Link to="/magazine" onClick={closeDrawer}>Magazine</Link>
       <span className="topbar__nav-divider" aria-hidden="true" />
       {/* Both Desktop and Mobile: Show "Admin Login" */}
       <Link to="/admin/login" className="topbar__nav-admin" aria-label="Admin login" title="Admin login" onClick={closeDrawer}>
@@ -604,7 +636,7 @@ function AboutPage() {
 
         <div className="section-heading section-heading--compact">
           <h3>Voice artists</h3>
-          <p>Four voice artists give the stories a warm and expressive reading presence.</p>
+          <p>{teamSections.voiceArtists.length} voice artists give the stories a warm and expressive reading presence.</p>
         </div>
 
         <div className="team-grid">
@@ -615,7 +647,7 @@ function AboutPage() {
 
         <div className="section-heading section-heading--compact">
           <h3>Editors</h3>
-          <p>Seven editors help refine the final presentation and keep everything consistent.</p>
+          <p>{teamSections.editors.length} editors help refine the final presentation and keep everything consistent.</p>
         </div>
 
         <div className="team-grid team-grid--editors">
@@ -710,12 +742,12 @@ function DigestPage() {
     <AppShell>
       <section className="page-section page-hero-copy">
         <div className="section-heading">
-          <span className="eyebrow">Digest</span>
-          <h2>Digest uploads.</h2>
-          <p>Files the team has uploaded specifically to the Digest section.</p>
+          <span className="eyebrow">Magazine</span>
+          <h2>Magazine uploads.</h2>
+          <p>Browse the monthly magazine posts uploaded by the team.</p>
         </div>
 
-        {loading ? <div className="state-card">Loading digest...</div> : null}
+        {loading ? <div className="state-card">Loading magazine...</div> : null}
         {error ? <div className="state-card state-card--error">{error}</div> : null}
 
         {!loading && !error && digestFiles.length === 0 ? (
@@ -728,13 +760,21 @@ function DigestPage() {
           <div className="library-grid">
             {digestFiles.map((novel) => (
               <article key={novel.id} className="library-card">
-                <span className="library-card__meta">Digest</span>
+                <span className="library-card__meta">Magazine</span>
                 <h3>{novel.title}</h3>
-                <p>{novel.summary}</p>
-                <div style={{ marginBottom: '0.75rem', fontSize: '0.85rem', color: 'var(--plum-700)', fontWeight: '500' }}>
-                  By {novel.writer?.name || 'Unknown Writer'}
+                <p style={{ marginBottom: '0.45rem' }}>Month: {getMagazineMonthLabel(novel)}</p>
+                <div style={{ marginBottom: '0.75rem', fontSize: '0.85rem', color: 'var(--plum-700)', fontWeight: '600' }}>
+                  Post views: {novel.views || 0} · Downloads: {novel.downloadCount || 0}
                 </div>
                 <div className="library-card__actions">
+                  <a
+                    href={apiAsset(`/api/view/${getFilenameFromUrl(novel.fileUrl)}`)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="secondary-button"
+                  >
+                    View Post
+                  </a>
                   <a href={apiAsset(`/api/download/${getFilenameFromUrl(novel.fileUrl)}`)} className="primary-button">
                     Download
                   </a>
@@ -2541,6 +2581,9 @@ function AdminManagePage() {
                             <p style={{ fontSize: '0.8rem', color: 'var(--plum-700)', margin: '0.25rem 0 0' }}>
                               ★ {(novel.averageRating || 0).toFixed(1)} ({novel.reviews?.length || 0} reviews)
                             </p>
+                            <p style={{ fontSize: '0.8rem', color: 'var(--plum-700)', margin: '0.2rem 0 0' }}>
+                              Post views: {novel.views || 0} · Downloads: {novel.downloadCount || 0}
+                            </p>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                             <button
@@ -2719,7 +2762,7 @@ function AdminDigestPage() {
   const [writers, setWriters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-  const [digestForm, setDigestForm] = useState({ writerId: '', title: '', summary: '' });
+  const [digestForm, setDigestForm] = useState({ writerId: '', title: '', month: '' });
   const [digestPdf, setDigestPdf] = useState(null);
   const [uploadFeedback, setUploadFeedback] = useState({ message: '', error: '' });
   const [listFeedback, setListFeedback] = useState({ message: '', error: '' });
@@ -2734,7 +2777,7 @@ function AdminDigestPage() {
       setWriters(items);
       setDigestForm((current) => ({ ...current, writerId: current.writerId || items[0]?.id || '' }));
     } catch (e) {
-      console.error("Failed to load digest library:", e);
+      console.error("Failed to load magazine library:", e);
       if (e.status === 401) {
         localStorage.removeItem('kitab-era-admin-token');
         navigate('/admin/login', { replace: true });
@@ -2759,11 +2802,6 @@ function AdminDigestPage() {
     event.preventDefault();
     setUploadFeedback({ message: '', error: '' });
 
-    if (!digestForm.writerId) {
-      setUploadFeedback({ message: '', error: 'Please select a writer.' });
-      return;
-    }
-
     if (!digestForm.title.trim()) {
       setUploadFeedback({ message: '', error: 'Title is required.' });
       return;
@@ -2774,19 +2812,27 @@ function AdminDigestPage() {
       return;
     }
 
+    if (!digestForm.month) {
+      setUploadFeedback({ message: '', error: 'Month is required.' });
+      return;
+    }
+
     const formData = new FormData();
-    formData.append('writerId', digestForm.writerId);
+    if (digestForm.writerId) {
+      formData.append('writerId', digestForm.writerId);
+    }
     formData.append('title', digestForm.title);
-    formData.append('summary', digestForm.summary);
+    formData.append('summary', '');
+    formData.append('monthLabel', formatMonthInput(digestForm.month));
     formData.append('category', 'digest');
     formData.append('subcategory', '');
     formData.append('pdf', digestPdf);
 
     try {
       await createNovel(token, formData);
-      setDigestForm((current) => ({ ...current, title: '', summary: '' }));
+      setDigestForm((current) => ({ ...current, title: '', month: '' }));
       setDigestPdf(null);
-      setUploadFeedback({ message: 'Digest uploaded successfully.', error: '' });
+      setUploadFeedback({ message: 'Magazine uploaded successfully.', error: '' });
       await loadLibrary();
     } catch (requestError) {
       setUploadFeedback({ message: '', error: requestError.message });
@@ -2794,14 +2840,14 @@ function AdminDigestPage() {
   }
 
   async function handleDeleteDigest(novel) {
-    if (!window.confirm(`Delete "${novel.title}" from Digest?`)) {
+    if (!window.confirm(`Delete "${novel.title}" from Magazine?`)) {
       return;
     }
 
     try {
       setListFeedback({ message: '', error: '' });
       await deleteNovel(token, novel.id);
-      setListFeedback({ message: 'Digest item deleted successfully.', error: '' });
+      setListFeedback({ message: 'Magazine item deleted successfully.', error: '' });
       await loadLibrary();
     } catch (requestError) {
       setListFeedback({ message: '', error: requestError.message });
@@ -2821,12 +2867,12 @@ function AdminDigestPage() {
   const query = searchQuery.trim().toLowerCase();
   const filteredDigestItems = query
     ? digestItems.filter((item) =>
-        item.title.toLowerCase().includes(query) || (item.summary || '').toLowerCase().includes(query)
+        item.title.toLowerCase().includes(query) || getMagazineMonthLabel(item).toLowerCase().includes(query)
       )
     : digestItems;
 
   const groupedByMonth = filteredDigestItems.reduce((groups, item) => {
-    const monthLabel = new Date(item.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const monthLabel = getMagazineMonthLabel(item);
     if (!groups[monthLabel]) {
       groups[monthLabel] = [];
     }
@@ -2855,34 +2901,25 @@ function AdminDigestPage() {
         </button>
         <div className="section-heading admin-layout__heading">
           <div>
-            <span className="eyebrow">Digest</span>
-            <h2>Upload & manage Digest files.</h2>
-            <p>Digest uploads live here, separate from the main library, so the rest of Manage Uploads stays uncluttered.</p>
+            <span className="eyebrow">Magazine</span>
+            <h2>Upload & manage magazine files.</h2>
+            <p>Magazine uploads live here, separate from the main library, so the rest of Manage Uploads stays uncluttered.</p>
           </div>
         </div>
 
         <form className="admin-card" onSubmit={handleDigestUpload} style={{ marginBottom: '2rem' }}>
-          <h3>Upload Digest</h3>
-          <label>
-            Writer
-            <select
-              value={String(digestForm.writerId ?? '')}
-              onChange={(event) => setDigestForm({ ...digestForm, writerId: event.target.value })}
-            >
-              {writers.map((writer) => (
-                <option key={writer.id} value={String(writer.id)}>
-                  {writer.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <h3>Upload Magazine</h3>
           <label>
             Title
             <input value={digestForm.title} onChange={(event) => setDigestForm({ ...digestForm, title: event.target.value })} />
           </label>
           <label>
-            Summary
-            <textarea value={digestForm.summary} onChange={(event) => setDigestForm({ ...digestForm, summary: event.target.value })} rows="3" />
+            Month
+            <input
+              type="month"
+              value={digestForm.month}
+              onChange={(event) => setDigestForm({ ...digestForm, month: event.target.value })}
+            />
           </label>
           <label>
             PDF file
@@ -2894,14 +2931,14 @@ function AdminDigestPage() {
             />
             {digestPdf && <small style={{ color: 'var(--plum-700)' }}>✓ {digestPdf.name}</small>}
           </label>
-          <button className="primary-button" disabled={!digestPdf || !digestForm.title.trim()} style={{ width: 'fit-content' }}>
-            Upload Digest
+          <button className="primary-button" disabled={!digestPdf || !digestForm.title.trim() || !digestForm.month} style={{ width: 'fit-content' }}>
+            Upload Magazine
           </button>
           {uploadFeedback.message ? <div className="state-card state-card--success">{uploadFeedback.message}</div> : null}
           {uploadFeedback.error ? <div className="state-card state-card--error">{uploadFeedback.error}</div> : null}
         </form>
 
-        {loading ? <div className="state-card">Loading digest...</div> : null}
+        {loading ? <div className="state-card">Loading magazine...</div> : null}
         {loadError ? <div className="state-card state-card--error">{loadError}</div> : null}
         {listFeedback.message ? <div className="state-card state-card--success">{listFeedback.message}</div> : null}
         {listFeedback.error ? <div className="state-card state-card--error">{listFeedback.error}</div> : null}
@@ -2916,7 +2953,7 @@ function AdminDigestPage() {
                 <input
                   type="text"
                   className="search-input"
-                  placeholder="Search digest by title..."
+                  placeholder="Search magazine by title or month..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -2930,7 +2967,7 @@ function AdminDigestPage() {
 
             {monthGroups.length === 0 ? (
               <div className="state-card">
-                {query ? `No digest items match "${searchQuery}".` : 'No digest files uploaded yet.'}
+                {query ? `No magazine items match "${searchQuery}".` : 'No magazine files uploaded yet.'}
               </div>
             ) : (
               monthGroups.map(([monthLabel, items]) => (
@@ -2943,9 +2980,25 @@ function AdminDigestPage() {
                       <article key={item.id} className="admin-card admin-library-card">
                         <div className="admin-library-card__head">
                           <div>
-                            <span className="admin-library-card__meta">By {item.writerName}</span>
+                            <span className="admin-library-card__meta">Magazine</span>
                             <h3>{item.title}</h3>
-                            <p>{item.summary}</p>
+                            <p>Month: {getMagazineMonthLabel(item)}</p>
+                            <p style={{ fontSize: '0.82rem', color: 'var(--plum-700)', margin: '0.25rem 0 0' }}>
+                              Post views: {item.views || 0} · Downloads: {item.downloadCount || 0}
+                            </p>
+                            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginTop: '0.85rem' }}>
+                              <a
+                                href={apiAsset(`/api/view/${getFilenameFromUrl(item.fileUrl)}`)}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="secondary-button"
+                              >
+                                View Post
+                              </a>
+                              <a href={apiAsset(`/api/download/${getFilenameFromUrl(item.fileUrl)}`)} className="primary-button">
+                                Download
+                              </a>
+                            </div>
                           </div>
                           <button className="danger-button" type="button" onClick={() => handleDeleteDigest(item)}>
                             Delete
@@ -3061,7 +3114,8 @@ export default function App() {
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/contact-us" element={<ContactPage />} />
         <Route path="/popular-novels" element={<PopularNovelsPage />} />
-        <Route path="/digest" element={<DigestPage />} />
+        <Route path="/magazine" element={<DigestPage />} />
+        <Route path="/digest" element={<Navigate to="/magazine" replace />} />
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/explore/:category" element={<ExplorePage />} />
         <Route path="/explore/:category/:subcategory" element={<ExplorePage />} />
@@ -3070,7 +3124,8 @@ export default function App() {
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="/admin/manage" element={<AdminManagePage />} />
-        <Route path="/admin/digest" element={<AdminDigestPage />} />
+        <Route path="/admin/magazine" element={<AdminDigestPage />} />
+        <Route path="/admin/digest" element={<Navigate to="/admin/magazine" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

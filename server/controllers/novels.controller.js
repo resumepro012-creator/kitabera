@@ -15,6 +15,7 @@ function publicNovel(novel, _episodes) {
     id: novel.id,
     title: novel.title,
     summary: novel.summary,
+    monthLabel: novel.monthLabel || '',
     novelSlug: novel.novelSlug,
     writerId: novel.writerId,
     writerSlug: novel.writerSlug,
@@ -26,6 +27,7 @@ function publicNovel(novel, _episodes) {
     bookmarks: novel.bookmarks || 0,
     averageRating: novel.averageRating || 0,
     reviewCount: novel.reviewCount || 0,
+    downloadCount: novel.downloadCount || 0,
     episodeCount: novel.episodeCount || 0,
     fileUrl: novel.fileUrl || '',
     coverUrl: novel.coverUrl || '',
@@ -148,13 +150,31 @@ export async function getAdminLibrary(req, res, next) {
 
 export async function createNovel(req, res, next) {
   try {
-    const writerId = String(req.body?.writerId || '').trim();
+    let writerId = String(req.body?.writerId || '').trim();
     const novelId = String(req.body?.novelId || '').trim();
     const title = String(req.body?.title || '').trim();
     const summary = String(req.body?.summary || '').trim();
+    const monthLabel = String(req.body?.monthLabel || '').trim();
     const category = normalizeKey(req.body?.category);
     const subcategory = normalizeKey(req.body?.subcategory);
     const episodeTitle = String(req.body?.episodeTitle || '').trim();
+
+    if (category === 'digest') {
+      if (!writerId) {
+        const allWriters = await firestoreService.getAllWriters();
+        if (allWriters.length > 0) {
+          writerId = allWriters[0].id;
+        } else {
+          const slugFromTitle = 'kitab-era-magazine';
+          const defaultWriter = await firestoreService.createWriter({
+            name: 'Kitab Era Magazine',
+            slug: slugFromTitle,
+            bio: 'Official magazine publisher for Kitab Era posts and monthly editions.',
+          });
+          writerId = defaultWriter.id;
+        }
+      }
+    }
 
     if (!writerId) {
       res.status(400).json({ message: 'Writer is required.' });
@@ -163,6 +183,11 @@ export async function createNovel(req, res, next) {
 
     if (!title) {
       res.status(400).json({ message: 'Novel title is required.' });
+      return;
+    }
+
+    if (category === 'digest' && !monthLabel) {
+      res.status(400).json({ message: 'Month is required for magazine uploads.' });
       return;
     }
 
@@ -211,6 +236,7 @@ export async function createNovel(req, res, next) {
       writerSlug: writer.slug,
       title,
       summary,
+      monthLabel,
       category,
       subcategory,
       file: req.file,

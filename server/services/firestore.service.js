@@ -92,7 +92,7 @@ export async function getNovelById(novelId) {
   return doc.exists ? mapDoc(doc) : null;
 }
 
-export async function createNovel({ writerId, writerSlug, title, novelSlug, summary, category, subcategory, status = 'ongoing', coverUrl = '', coverPath = '', originalFilename = '' }) {
+export async function createNovel({ writerId, writerSlug, title, novelSlug, summary, category, subcategory, status = 'ongoing', coverUrl = '', coverPath = '', originalFilename = '', monthLabel = '' }) {
   const id = `novel_${randomUUID()}`;
   const data = {
     writerId,
@@ -110,9 +110,11 @@ export async function createNovel({ writerId, writerSlug, title, novelSlug, summ
     fileUrl: '',
     averageRating: 0,
     reviewCount: 0,
+    downloadCount: 0,
     coverUrl,
     coverPath,
     originalFilename,
+    monthLabel,
     createdAt: FieldValue.serverTimestamp()
   };
 
@@ -155,6 +157,14 @@ export async function incrementNovelViews(novelId) {
   const novelRef = db().collection('novels').doc(novelId);
   await novelRef.update({
     views: FieldValue.increment(1),
+    updatedAt: FieldValue.serverTimestamp()
+  });
+}
+
+export async function incrementNovelDownloads(novelId) {
+  const novelRef = db().collection('novels').doc(novelId);
+  await novelRef.update({
+    downloadCount: FieldValue.increment(1),
     updatedAt: FieldValue.serverTimestamp()
   });
 }
@@ -304,7 +314,9 @@ export async function findFileByFilename(filename) {
     const fileNameFromUrl = extractFilename(fileUrl);
     if (fileNameFromPath === filename || fileNameFromUrl === filename) {
       return { 
+        id: doc.id,
         type: 'novel', 
+        novelId: doc.id,
         path: filePath, 
         url: fileUrl, 
         originalFilename: data.originalFilename,
@@ -322,7 +334,9 @@ export async function findFileByFilename(filename) {
     const fileNameFromUrl = extractFilename(pdfUrl);
     if (fileNameFromPath === filename || fileNameFromUrl === filename) {
       return { 
+        id: doc.id,
         type: 'episode', 
+        novelId: data.novelId,
         path: pdfPath, 
         url: pdfUrl, 
         originalFilename: data.originalFilename,
